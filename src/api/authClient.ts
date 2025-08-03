@@ -69,8 +69,7 @@ export const getUser = async (email: string) => {
 
 
 export const deleteUser = async (email: string) => {
-
-    const res = APIClient.get(`/delete-user/${email}`)
+    APIClient.get(`/delete-user/${email}`);
 }
 
 

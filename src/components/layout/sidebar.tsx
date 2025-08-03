@@ -80,7 +80,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       <div className="p-3">
         <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
           <Plus className="h-4 w-4 flex-shrink-0" />
-          {!isCollapsed && <span className="ml-2">New Post</span>}
+          {!isCollapsed && <span className="ml-2">New Project</span>}
         </Button>
       </div>
     </div>

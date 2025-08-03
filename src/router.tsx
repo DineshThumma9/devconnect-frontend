@@ -13,6 +13,7 @@ const router = createBrowserRouter([
     element: <PublicRoute />,
     children: [
       { path: "/login", element: <LoginPage /> },
+      { path: "/", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> }
     ]
   },
@@ -23,8 +24,8 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { path: "/app", element: <HomePage /> },
-          { path: "/project/:id", element: <ProjectDetailsPage /> },
-          { path: "/profile/:id", element: <UserProfilePage /> }
+          { path: "/projects/:id", element: <ProjectDetailsPage /> },
+          { path: "/profiles/:id", element: <UserProfilePage /> }
         ]
       }
     ]

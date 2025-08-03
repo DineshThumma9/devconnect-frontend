@@ -1,38 +1,29 @@
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Camera, Send, Tag, X} from "lucide-react";
+import {Link, Send, Tag, X} from "lucide-react";
 import {Label} from "@/components/ui/label.tsx";
 import {Textarea} from "@/components/ui/textarea.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Badge} from "@/components/ui/badge.tsx";
-import React, {useState} from "react";
-import {createPost} from "@/api/postClient.ts"
+import {useState} from "react";
 
 
-const NewPost = () => {
+const NewProject = () => {
 
-    const [isNewPostOpen, setIsNewPostOpen] = useState(false)
-
-
-    const [newPost, setNewPost] = useState({
+    const [isNewProjOpen, setIsNewProjOpen] = useState(false)
+    const [newProj, setNewProj] = useState({
         title: "",
-        content: "",
+        overview: "",
         image: null as File | null,
         tags: [] as string[],
+        projectLink: "",
     })
     const [newTag, setNewTag] = useState("")
 
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            setNewPost((prev) => ({...prev, image: file}))
-        }
-    }
-
     const addTag = () => {
-        if (newTag.trim() && !newPost.tags.includes(newTag.trim())) {
-            setNewPost((prev) => ({
+        if (newTag.trim() && !newProj.tags.includes(newTag.trim())) {
+            setNewProj((prev) => ({
                 ...prev,
                 tags: [...prev.tags, newTag.trim()],
             }))
@@ -41,23 +32,26 @@ const NewPost = () => {
     }
 
     const removeTag = (tagToRemove: string) => {
-        setNewPost((prev) => ({
+        setNewProj((prev) => ({
             ...prev,
             tags: prev.tags.filter((tag) => tag !== tagToRemove),
         }))
     }
 
     const handleCreatePost = () => {
-        console.log("Creating post:", newPost)
-        setIsNewPostOpen(false)
-        createPost(newPost.title, newPost.content, newPost.image, newPost.tags)
-
+        console.log("Creating post:", newProj)
+        setIsNewProjOpen(false)
+        setNewProj({
+            title:"",
+            overview: "",
+            image: null,
+            tags: [],
+            projectLink: "",
+        })
     }
-
-
     return (
         <div className="bg-gray-900 rounded-lg p-4">
-            <Dialog open={isNewPostOpen} onOpenChange={setIsNewPostOpen}>
+            <Dialog open={isNewProjOpen} onOpenChange={setIsNewProjOpen}>
                 <DialogTrigger asChild>
                     <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
                         <Send className="w-4 h-4 mr-2"/>
@@ -66,50 +60,48 @@ const NewPost = () => {
                 </DialogTrigger>
                 <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Create New Post</DialogTitle>
+                        <DialogTitle>Create New Project</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
 
 
                         <div>
-                            <Label htmlFor="content">Post Title</Label>
-                            <Input
-                                id="title"
-                                placeholder="Title of your Post"
-                                value={newPost.title}
-                                onChange={(e) => setNewPost((prev) => ({...prev, content: e.target.value}))}
-                                className="bg-gray-800 border-gray-600 text-white"
-                            />
-                        </div>
-
-
-                        <div>
-                            <Label htmlFor="content">What's on your mind?</Label>
+                            <Label htmlFor="content">Project Name</Label>
                             <Textarea
                                 id="content"
-                                placeholder="Share your thoughts, projects, or ask questions..."
-                                value={newPost.content}
-                                onChange={(e) => setNewPost((prev) => ({...prev, content: e.target.value}))}
+                                placeholder="Name of your project"
+                                value={newProj.title}
+                                onChange={(e) => setNewProj((prev) => ({...prev, content: e.target.value}))}
                                 className="bg-gray-800 border-gray-600 text-white min-h-[100px]"
                             />
                         </div>
 
-                        {/* Image Upload */}
+
                         <div>
-                            <Label htmlFor="image">Upload Image</Label>
-                            <div className="flex items-center gap-2">
-                                <input id="image" type="file" accept="image/*" onChange={handleImageUpload}
-                                       className="hidden"/>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => document.getElementById("image")?.click()}
-                                    className="border-gray-600 text-gray-300 hover:bg-gray-800"
-                                >
-                                    <Camera className="w-4 h-4 mr-2"/>
-                                    {newPost.image ? "Change Image" : "Add Image"}
-                                </Button>
-                                {newPost.image && <span className="text-sm text-gray-400">{newPost.image.name}</span>}
+                            <Label htmlFor="content">Project Overview</Label>
+                            <Textarea
+                                id="overview"
+                                placeholder="What is this Project about why building it descibe it?"
+                                value={newProj.overview}
+                                onChange={(e) => setNewProj((prev) => ({...prev, content: e.target.value}))}
+                                className="bg-gray-800 border-gray-600 text-white min-h-[100px]"
+                            />
+                        </div>
+
+
+                        {/* Project Link */}
+                        <div>
+                            <Label htmlFor="projectLink">Project Link </Label>
+                            <div className="relative">
+                                <Link
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"/>
+                                <Input
+                                    id="projectLink"
+                                    placeholder="https://github.com/username/project"
+                                    value={newProj.projectLink}
+                                    onChange={(e) => setNewProj((prev) => ({...prev, projectLink: e.target.value}))}
+                                    className="pl-10 bg-gray-800 border-gray-600 text-white"
+                                />
                             </div>
                         </div>
 
@@ -118,7 +110,7 @@ const NewPost = () => {
                         <div>
                             <Label>Tags</Label>
                             <div className="flex flex-wrap gap-2 mb-2">
-                                {newPost.tags.map((tag) => (
+                                {newProj.tags.map((tag) => (
                                     <Badge key={tag} variant="secondary" className="bg-gray-800 text-white">
                                         {tag}
                                         <button onClick={() => removeTag(tag)} className="ml-1 hover:text-red-400">
@@ -150,14 +142,14 @@ const NewPost = () => {
                         <div className="flex justify-end gap-2 pt-4">
                             <Button
                                 variant="outline"
-                                onClick={() => setIsNewPostOpen(false)}
+                                onClick={() => setIsNewProjOpen(false)}
                                 className="border-gray-600 text-gray-300 hover:bg-gray-800"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleCreatePost}
-                                disabled={!newPost.content.trim()}
+                                disabled={!newProj.overview.trim()}
                                 className="bg-teal-600 hover:bg-teal-700 text-white"
                             >
                                 <Send className="w-4 h-4 mr-2"/>
@@ -171,4 +163,4 @@ const NewPost = () => {
     )
 }
 
-export default NewPost;
+export default NewProject;

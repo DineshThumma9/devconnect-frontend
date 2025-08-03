@@ -1,6 +1,9 @@
+
 "use client"
 
 import {useState} from "react"
+import {Button} from "@/components/ui/button"
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 
 import useConstants from "@/hooks/useConstants.ts";
@@ -30,6 +33,9 @@ export default function UserProfilePage() {
                                 Projects
                             </TabsTrigger>
                             <TabsTrigger value="skills" className="data-[state=active]:bg-gray-800">
+                                Posts
+                            </TabsTrigger>
+                            <TabsTrigger value="skills" className="data-[state=active]:bg-gray-800">
                                 Skills
                             </TabsTrigger>
                             <TabsTrigger value="activity" className="data-[state=active]:bg-gray-800">
@@ -47,7 +53,11 @@ export default function UserProfilePage() {
                                     ))}
                                 </div>
                             </div>
+                        </TabsContent>
 
+
+
+                        <TabsContent value={"post"}>
                             {/* All Projects */}
                             <div>
                                 <h2 className="text-2xl font-semibold mb-6">All Projects</h2>
