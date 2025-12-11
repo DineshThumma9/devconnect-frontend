@@ -1,9 +1,18 @@
 // apiClient.ts
 import axios from "axios";
 
-// Replace this with your actual token fetch logic (e.g., from localStorage)
+// Get token from Zustand persisted store
 const getAuthToken = (): string | null => {
-    return localStorage.getItem("token");
+    const authStore = localStorage.getItem("auth-store");
+    if (authStore) {
+        try {
+            const parsed = JSON.parse(authStore);
+            return parsed.state?.accessToken || null;
+        } catch {
+            return null;
+        }
+    }
+    return null;
 };
 
 // Attach interceptors

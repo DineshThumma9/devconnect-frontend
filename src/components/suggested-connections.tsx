@@ -1,41 +1,40 @@
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {z} from "zod";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx"
+import { Button } from "@/components/ui/button.tsx"
 
-
-const Connection = z.object({
-    id:z.number(),
-    avatar:z.string(),
-    name:z.string(),
-    role:z.string()
-
-})
-interface Props{
-    connection:z.infer<typeof Connection>
+interface Connection {
+    username: string
+    email: string
+    profile_pic: string
 }
-const SuggestedConnections = ({connection}:Props)=>{
+
+interface Props {
+    connection: Connection
+}
+
+const SuggestedConnections = ({ connection }: Props) => {
     return (
-        <div key={connection.id} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <Avatar>
-                    <AvatarImage src={connection.avatar || "/placeholder.svg"} alt={connection.name}/>
-                    <AvatarFallback>
-                        {connection.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
+        <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition-colors group">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Avatar className="ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all">
+                    <AvatarImage src={connection.profile_pic || "/placeholder.svg"} alt={connection.username} />
+                    <AvatarFallback className="bg-teal-600 text-white font-semibold">
+                        {connection.username.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
-                <div>
-                    <h4 className="font-medium">{connection.name}</h4>
-                    <p className="text-gray-400 text-sm">{connection.role}</p>
+                <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-white group-hover:text-teal-400 transition-colors truncate">@{connection.username}</h4>
+                    <p className="text-gray-400 text-sm truncate">{connection.email}</p>
                 </div>
             </div>
-            <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-800">
+            <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-teal-600 text-teal-400 hover:bg-teal-600 hover:text-white hover:border-teal-500 transition-all duration-200 flex-shrink-0"
+            >
                 Connect
             </Button>
         </div>
     )
 }
 
-export default  SuggestedConnections;
+export default SuggestedConnections

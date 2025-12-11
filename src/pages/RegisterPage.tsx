@@ -1,4 +1,4 @@
-import {RegisterForm} from "@/components/regitser-form"
+import { RegisterForm } from "@/components/RegisterForm"
 
 export default function RegisterPage() {
     return (
@@ -13,7 +13,7 @@ export default function RegisterPage() {
             <div className="bg-muted relative hidden lg:block">
                 <img
                     src="/images/img_1.png"
-                    alt="Image"
+                    alt="DevConnect platform showcase"
                     className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
                 />
             </div>

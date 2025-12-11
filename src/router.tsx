@@ -5,6 +5,7 @@ import RegisterPage from "@/pages/RegisterPage"
 import HomePage from "@/pages/HomePage"
 import ProjectDetailsPage from "@/pages/ProjectDetailsPage"
 import UserProfilePage from "@/pages/UserProfilePage"
+import OAuthCallbackPage from "@/pages/OAuthCallbackPage"
 import PublicRoute from "@/router/PublicRoute"
 import PrivateRoute from "@/router/PrivateRoute"
 
@@ -14,7 +15,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/login", element: <LoginPage /> },
       { path: "/", element: <LoginPage /> },
-      { path: "/register", element: <RegisterPage /> }
+      { path: "/register", element: <RegisterPage /> },
+      { path: "/oauth2/callback", element: <OAuthCallbackPage /> }
     ]
   },
   {

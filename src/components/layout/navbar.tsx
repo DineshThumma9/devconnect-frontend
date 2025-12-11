@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, Search } from "lucide-react"
+import { Bell, Search, LogOut, User as UserIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -9,18 +9,28 @@ import { useEffect } from "react"
 import useAuthStore from "@/store/authStore"
 import useInitStore from "@/store/initStore"
 import { axiosInstance } from "@/api/apiClient"
+import { useNavigate } from "react-router-dom"
+import { Separator } from "@/components/ui/separator"
 
 export function Navbar() {
-    const { accessToken } = useAuthStore()
+    const { accessToken, logout } = useAuthStore()
     const {
         setProfilePic,
         setName,
         setUsername,
+        clearUser,
         user_email,
         name,
         username,
         profile_pic
     } = useInitStore()
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        logout()
+        clearUser()
+        navigate("/login")
+    }
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -43,7 +53,7 @@ export function Navbar() {
         }
 
         fetchUser()
-    }, [accessToken, setName, setUsername, setProfilePic])
+    }, [accessToken, setName, setUsername, setProfilePic, user_email])
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60">
@@ -74,10 +84,11 @@ export function Navbar() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-gray-300 hover:text-white relative"
+                        onClick={() => console.log("Notifications clicked")}
+                        className="text-gray-300 hover:text-teal-400 hover:bg-gray-800 relative transition-colors"
                     >
                         <Bell className="h-5 w-5" />
-                        <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
+                        <span className="absolute top-1 right-1 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center text-white font-bold shadow-lg">3</span>
                     </Button>
 
                     {/* Profile Menu */}
@@ -96,7 +107,31 @@ export function Navbar() {
                             className="w-56 bg-gray-800 border-gray-700"
                             align="end"
                         >
-                            {/* Profile content here */}
+                            <div className="flex flex-col space-y-1">
+                                <div className="px-2 py-1.5">
+                                    <p className="text-sm font-medium text-white">{name || "User"}</p>
+                                    <p className="text-xs text-gray-400">@{username || "username"}</p>
+                                    <p className="text-xs text-gray-500 truncate">{user_email}</p>
+                                </div>
+                                <Separator className="bg-gray-700" />
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700"
+                                    onClick={() => navigate(`/profiles/${username || "1"}`)}
+                                >
+                                    <UserIcon className="mr-2 h-4 w-4" />
+                                    Profile
+                                </Button>
+                                <Separator className="bg-gray-700" />
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-gray-700"
+                                    onClick={handleLogout}
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    Logout
+                                </Button>
+                            </div>
                         </PopoverContent>
                     </Popover>
                 </div>

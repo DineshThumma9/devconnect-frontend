@@ -136,7 +136,7 @@ export const loginUser = async (
     if (res.status != 200) {
         console.log(res.data)
         console.log(res.data.error)
-         throw Error("Some Error has occured")
+         throw new Error("Some Error has occured")
     }
 
     return  LoginRequest.safeParse(res.data);

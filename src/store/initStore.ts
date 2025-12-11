@@ -14,7 +14,8 @@ type UserState = {
     setUserEmail : (email:string)=>void,
     setUsername:(username:string) => void,
     setName:(name:string) => void,
-    setProfilePic:(profile_pic:string) => void
+    setProfilePic:(profile_pic:string) => void,
+    clearUser: () => void
 
 }
 
@@ -29,7 +30,8 @@ const useInitStore = create<UserState>()(
             setName:(name:string) => set({name}),
             setUserEmail:(email:string) => set({user_email:email}),
             setProfilePic:(profile) => set({profile_pic:profile}),
-            setUsername:(username) => set({username:username})
+            setUsername:(username) => set({username:username}),
+            clearUser: () => set({user_email: "", profile_pic: "", username: "", name: ""})
 
 
         }),

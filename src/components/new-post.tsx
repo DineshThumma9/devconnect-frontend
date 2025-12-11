@@ -56,47 +56,47 @@ const NewPost = () => {
 
 
     return (
-        <div className="bg-gray-900 rounded-lg p-4">
+        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors">
             <Dialog open={isNewPostOpen} onOpenChange={setIsNewPostOpen}>
                 <DialogTrigger asChild>
-                    <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+                    <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
                         <Send className="w-4 h-4 mr-2"/>
                         What's on your mind?
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Create New Post</DialogTitle>
+                        <DialogTitle className="text-xl font-bold text-white">Create New Post</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
 
 
                         <div>
-                            <Label htmlFor="content">Post Title</Label>
+                            <Label htmlFor="title" className="text-gray-200 font-medium">Post Title</Label>
                             <Input
                                 id="title"
                                 placeholder="Title of your Post"
                                 value={newPost.title}
-                                onChange={(e) => setNewPost((prev) => ({...prev, content: e.target.value}))}
-                                className="bg-gray-800 border-gray-600 text-white"
+                                onChange={(e) => setNewPost((prev) => ({...prev, title: e.target.value}))}
+                                className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500"
                             />
                         </div>
 
 
                         <div>
-                            <Label htmlFor="content">What's on your mind?</Label>
+                            <Label htmlFor="content" className="text-gray-200 font-medium">What's on your mind?</Label>
                             <Textarea
                                 id="content"
                                 placeholder="Share your thoughts, projects, or ask questions..."
                                 value={newPost.content}
                                 onChange={(e) => setNewPost((prev) => ({...prev, content: e.target.value}))}
-                                className="bg-gray-800 border-gray-600 text-white min-h-[100px]"
+                                className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500 min-h-[100px]"
                             />
                         </div>
 
                         {/* Image Upload */}
                         <div>
-                            <Label htmlFor="image">Upload Image</Label>
+                            <Label htmlFor="image" className="text-gray-200 font-medium">Upload Image</Label>
                             <div className="flex items-center gap-2">
                                 <input id="image" type="file" accept="image/*" onChange={handleImageUpload}
                                        className="hidden"/>
@@ -104,24 +104,24 @@ const NewPost = () => {
                                     type="button"
                                     variant="outline"
                                     onClick={() => document.getElementById("image")?.click()}
-                                    className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                                    className="bg-teal-600 text-white border-teal-600 hover:bg-transparent hover:text-teal-400 hover:border-teal-500 transition-all"
                                 >
                                     <Camera className="w-4 h-4 mr-2"/>
                                     {newPost.image ? "Change Image" : "Add Image"}
                                 </Button>
-                                {newPost.image && <span className="text-sm text-gray-400">{newPost.image.name}</span>}
+                                {newPost.image && <span className="text-sm text-gray-300">{newPost.image.name}</span>}
                             </div>
                         </div>
 
 
                         {/* Tags */}
                         <div>
-                            <Label>Tags</Label>
+                            <Label className="text-gray-200 font-medium">Tags</Label>
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {newPost.tags.map((tag) => (
-                                    <Badge key={tag} variant="secondary" className="bg-gray-800 text-white">
+                                    <Badge key={tag} variant="secondary" className="bg-teal-600/20 border border-teal-600 text-teal-400">
                                         {tag}
-                                        <button onClick={() => removeTag(tag)} className="ml-1 hover:text-red-400">
+                                        <button onClick={() => removeTag(tag)} className="ml-2 text-teal-400 hover:text-red-400 transition-colors">
                                             <X className="w-3 h-3"/>
                                         </button>
                                     </Badge>
@@ -133,13 +133,13 @@ const NewPost = () => {
                                     value={newTag}
                                     onChange={(e) => setNewTag(e.target.value)}
                                     onKeyPress={(e) => e.key === "Enter" && addTag()}
-                                    className="bg-gray-800 border-gray-600 text-white"
+                                    className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500"
                                 />
                                 <Button
                                     type="button"
                                     onClick={addTag}
                                     variant="outline"
-                                    className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                                    className="bg-teal-600 text-white border-teal-600 hover:bg-transparent hover:text-teal-400 hover:border-teal-500 transition-all"
                                 >
                                     <Tag className="w-4 h-4"/>
                                 </Button>
@@ -147,18 +147,18 @@ const NewPost = () => {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex justify-end gap-2 pt-4">
+                        <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
                             <Button
                                 variant="outline"
                                 onClick={() => setIsNewPostOpen(false)}
-                                className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                                className="bg-gray-700 text-white border-gray-600 hover:bg-transparent hover:text-gray-300 hover:border-gray-500 transition-all"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleCreatePost}
                                 disabled={!newPost.content.trim()}
-                                className="bg-teal-600 hover:bg-teal-700 text-white"
+                                className="bg-teal-600 hover:bg-teal-700 text-white disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
                             >
                                 <Send className="w-4 h-4 mr-2"/>
                                 Post

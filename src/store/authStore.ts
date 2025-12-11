@@ -7,6 +7,7 @@ type AuthState = {
 
     setAccessToken: (access: string) => void;
     setRefreshToken: (refresh: string) => void;
+    logout: () => void;
 };
 
 const useAuthStore = create<AuthState>()(
@@ -17,6 +18,7 @@ const useAuthStore = create<AuthState>()(
 
             setAccessToken: (access: string) => set({ accessToken: access }),
             setRefreshToken: (refresh: string) => set({ refreshToken: refresh }),
+            logout: () => set({ accessToken: '', refreshToken: '' }),
         }),
         {
             name: 'auth-store', // 🔐 localStorage key
