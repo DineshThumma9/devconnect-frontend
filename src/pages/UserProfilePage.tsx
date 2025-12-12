@@ -1,16 +1,45 @@
 "use client"
 
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 
 import useConstants from "@/hooks/useConstants.ts";
 import ProjectCard from "@/components/project-card.tsx";
 import ProfileSections from "@/components/profile-sections.tsx";
+import { projectInstance } from "@/api/apiClient";
+import useInitStore from "@/store/initStore";
+import { get } from "http";
+import { getProjectsByUser } from "@/api/projectClient";
+import { getPostsByUser } from "@/api/postClient";
+import PostCard from "@/components/post-card";
+import { ProjectResponseType } from "@/entities/Project";
+import { PostResponseType } from "@/entities/Post";
 
 export default function UserProfilePage() {
     const [activeTab, setActiveTab] = useState("overview")
 
     const {userData, featuredProjects, allProjects} = useConstants();
+    const {user_email} = useInitStore();
+
+    const [userProjects, setUserProjects] = useState<ProjectResponseType[]>([]); // Placeholder for user projects
+    const [userPosts, setUserPosts] = useState<PostResponseType[]>([]); // Placeholder for user posts
+
+    useEffect(() => {   
+        getUserProjects();
+        getUserPosts();
+
+    }, [user_email]);
+
+    const getUserProjects = async () =>  {
+        const response = await getProjectsByUser(user_email);
+        setUserProjects(response);
+
+    }
+
+    const getUserPosts = async () => {
+      const response = await getPostsByUser(user_email);
+      setUserPosts(response);
+    }
 
     return (
         <div className="min-h-screen w-full bg-gray-950 text-white">
@@ -24,27 +53,27 @@ export default function UserProfilePage() {
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="bg-gray-900 border-gray-700 mb-8">
                             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-800">
-                                Overview
+                                Posts
                             </TabsTrigger>
                             <TabsTrigger value="projects" className="data-[state=active]:bg-gray-800">
                                 Projects
                             </TabsTrigger>
-                            <TabsTrigger value="skills" className="data-[state=active]:bg-gray-800">
+                            {/* <TabsTrigger value="skills" className="data-[state=active]:bg-gray-800">
                                 Skills
                             </TabsTrigger>
                             <TabsTrigger value="activity" className="data-[state=active]:bg-gray-800">
                                 Activity
-                            </TabsTrigger>
+                            </TabsTrigger> */}
                         </TabsList>
 
                         <TabsContent value="overview">
                             {/* Featured Projects */}
                             <div className="mb-12">
-                                <h2 className="text-2xl font-semibold mb-6">Featured Projects</h2>
+                                <h2 className="text-2xl font-semibold mb-6">All Posts</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {featuredProjects.map((project) => (
-                                        <ProjectCard key={project.id} {...project} />
-                                    ))}
+                                    {userPosts.map((post) => (
+                                            <PostCard key={post.postId} post={post} />
+                                        ))}
                                 </div>
                             </div>
 
@@ -52,34 +81,34 @@ export default function UserProfilePage() {
                             <div>
                                 <h2 className="text-2xl font-semibold mb-6">All Projects</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {allProjects.map((project) => (
-                                        <ProjectCard key={project.id} {...project} />
+                                    {userProjects.map((project) => (
+                                        <ProjectCard key={project.id} project={project} />
                                     ))}
                                 </div>
                             </div>
                         </TabsContent>
 
-                        <TabsContent value="projects">
+                        {/* <TabsContent value="projects">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[...featuredProjects, ...allProjects].map((project) => (
                                     <ProjectCard key={project.id} {...project} />
                                 ))}
                             </div>
-                        </TabsContent>
+                        </TabsContent> */}
 
-                        <TabsContent value="skills">
+                        {/* <TabsContent value="skills">
                             <div className="bg-gray-900 rounded-lg p-6">
                                 <h3 className="text-xl font-semibold mb-4">Skills & Technologies</h3>
                                 <p className="text-gray-400">Skills and technologies would be displayed here.</p>
                             </div>
-                        </TabsContent>
+                        </TabsContent> */}
 
-                        <TabsContent value="activity">
+                        {/* <TabsContent value="activity">
                             <div className="bg-gray-900 rounded-lg p-6">
                                 <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
                                 <p className="text-gray-400">User activity timeline would be displayed here.</p>
                             </div>
-                        </TabsContent>
+                        </TabsContent> */}
                     </Tabs>
                 </div>
             </div>

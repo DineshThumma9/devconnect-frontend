@@ -16,7 +16,7 @@ const router = createBrowserRouter([
       { path: "/login", element: <LoginPage /> },
       { path: "/", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
-      { path: "/oauth2/callback", element: <OAuthCallbackPage /> }
+      { path: "/oauth/callback", element: <OAuthCallbackPage /> }
     ]
   },
   {

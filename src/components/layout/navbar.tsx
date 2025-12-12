@@ -9,7 +9,7 @@ import { useEffect } from "react"
 import useAuthStore from "@/store/authStore"
 import useInitStore from "@/store/initStore"
 import { axiosInstance } from "@/api/apiClient"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { Separator } from "@/components/ui/separator"
 
 export function Navbar() {
@@ -60,7 +60,13 @@ export function Navbar() {
             <div className="flex h-16 items-center justify-between px-4 md:px-6">
                 {/* Left */}
                 <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2">
+                    <div 
+                        onClick={() => {
+                            console.log('🏠 Home clicked - navigating to /app');
+                            navigate("/app");
+                        }}
+                        className="hidden sm:flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+                    >
                         <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
                             <div className="w-4 h-4 bg-white rounded-sm"></div>
                         </div>

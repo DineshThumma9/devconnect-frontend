@@ -3,33 +3,6 @@ import {z} from "zod";
 import {postResSchema} from "@/api/postClient.ts";
 
 
-export const projectResSchema = z.object({
-    id: z.string(),                                   // String - required
-    title: z.string(),                                // String - required
-    description: z.string(),                          // String - required
-    techRequirements: z.array(z.string()),            // List<String> - required
-    ownerUsername: z.string(),                        // String - required
-    ownerProfilePicUrl: z.string().url(),             // URL - required
-    isPrivate: z.boolean(),                           // boolean - required
-    status: z.string(),                               // String - required
-    ownerId: z.string(),                              // String - required
-    currentContributors: z.array(z.string()),         // List<String> - required
-    pastContributors: z.array(z.string()),            // List<String> - required
-    githubLink: z.string().url(),                     // URL - required
-    createdAt: z.union([                              // Java Date can be:
-        z.string().datetime(),                          // ISO string format
-        z.date()                                        // or JS Date object
-    ]),
-    media: z.array(z.string())                        // String[] - required
-});
-
-
-
-
-
-
-
-
 const connectionSchema = z.object({
     username: z.string(),
     email: z.string(),

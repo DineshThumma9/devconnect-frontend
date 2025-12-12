@@ -55,12 +55,12 @@ export const authInstance = axios.create({
 attachInterceptors(authInstance);
 
 export const postInstance = axios.create({
-    baseURL: "http://localhost:8000/post",
+    baseURL: "http://localhost:8000/posts",
 });
 attachInterceptors(postInstance);
 
 export const projectInstance = axios.create({
-    baseURL: "http://localhost:8000/project",
+    baseURL: "http://localhost:8000/projects",
 });
 attachInterceptors(projectInstance);
 

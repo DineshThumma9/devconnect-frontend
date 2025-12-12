@@ -21,14 +21,15 @@ export const postResSchema = z.object({
 
 
 
-export const createPost = async (title: string, body: string, media: File[]) => {
+export const createPost = async (title: string, body: string, media: File[], tags: string[]) => {
     const postReq = {
         title,
         body,
-        media
+        media,
+        tags
     };
 
-    return postInstance.post("/create/", postReq, {
+    return postInstance.post("/create", postReq, {
         headers: {
             "Content-Type": "application/json"
         }
@@ -75,3 +76,14 @@ export const getPost = async (id: string) => {
 export const getSuggestedConnections = async () => {
     return postInstance.get("/suggested-connections");
 };
+
+
+export const getPostsByUser = async (username: string): Promise<z.infer<typeof postResSchema>[]> => {
+    const response = await postInstance.get(`/get-posts/${username}`);
+    const parsed = response.data.map((post: unknown) => {
+        const result = postResSchema.safeParse(post);
+        if (!result.success) throw new Error("Invalid post format");
+        return result.data;
+    });
+    return parsed;
+}

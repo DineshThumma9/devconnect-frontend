@@ -21,3 +21,6 @@ export const PostResponse = z.object({
 
 })
 
+
+export type PostRequest = z.infer<typeof PostRequest>;
+export type PostResponseType = z.infer<typeof PostResponse>;

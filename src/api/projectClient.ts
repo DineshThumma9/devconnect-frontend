@@ -1,38 +1,14 @@
 import { projectInstance } from "@/api/apiClient";
 import { z } from "zod";
+import { ProjectResponse ,ProjectRequest} from "@/entities/Project";
 
-// ✅ Request DTO schema
-export const projectRequestDTOSchema = z.object({
-    title: z.string().min(1, "Title is required"),
-    description: z.string().min(1, "Description is required"),
-    techRequirements: z.array(z.string()).min(1, "Tech requirements are required"),
-    ownerId: z.string().optional(),
-    isPrivate: z.boolean().optional().default(false),
-    githubLink: z.string().url().optional(),
-    media: z.array(z.string()).optional().default([]),
-});
 
-// ✅ Response DTO schema
-export const projectResponseDTOSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    techRequirements: z.array(z.string()),
-    ownerUsername: z.string(),
-    ownerProfilePicUrl: z.string().url(),
-    isPrivate: z.boolean(),
-    status: z.string(),
-    ownerId: z.string(),
-    currentContributors: z.array(z.string()),
-    pastContributors: z.array(z.string()),
-    githubLink: z.string().url(),
-    createdAt: z.union([z.string().datetime(), z.date()]),
-    media: z.array(z.string()),
-});
+
+// ✅ Response DTO schema - matches ProjectResponseDTO
 
 // ✅ Create project
-export const createProject = async (project: z.infer<typeof projectRequestDTOSchema>) => {
-    const parsed = projectRequestDTOSchema.safeParse(project);
+export const createProject = async (project: z.infer<typeof ProjectRequest>) => {
+    const parsed = ProjectRequest.safeParse(project);
     if (!parsed.success) {
         throw new Error("Invalid project data: " + JSON.stringify(parsed.error.format()));
     }
@@ -50,7 +26,7 @@ export const deleteProject = async (projectId: string) => {
 // ✅ Get project by ID
 export const getProject = async (id: string) => {
     const response = await projectInstance.get(`/id/${id}`);
-    const parsed = projectResponseDTOSchema.safeParse(response.data);
+    const parsed = ProjectResponse.safeParse(response.data);
 
     if (!parsed.success) {
         throw new Error("Invalid response format from server.");
@@ -62,9 +38,9 @@ export const getProject = async (id: string) => {
 // ✅ Update project
 export const updateProject = async (
     id: string,
-    updatedData: z.infer<typeof projectRequestDTOSchema>
+    updatedData: z.infer<typeof ProjectRequest>
 ) => {
-    const parsed = projectRequestDTOSchema.safeParse(updatedData);
+    const parsed = ProjectRequest.safeParse(updatedData);
     if (!parsed.success) {
         throw new Error("Invalid update payload: " + JSON.stringify(parsed.error.format()));
     }
@@ -72,3 +48,9 @@ export const updateProject = async (
     const response = await projectInstance.put(`/update/${id}`, parsed.data);
     return response.data;
 };
+
+
+export const getProjectsByUser = async (username: string): Promise<z.infer<typeof ProjectResponse>[]> => {
+    const response = await projectInstance.get(`/get-projects/${username}`);
+    return response.data;
+}
