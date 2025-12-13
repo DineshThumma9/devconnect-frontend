@@ -47,7 +47,10 @@ export default function ProjectCard({ project, onClick }: Props) {
           {/* Owner Info */}
           <div className="flex items-center gap-3 mb-3">
             <Avatar className="w-8 h-8 ring-2 ring-gray-700">
-              <AvatarImage src={project.ownerProfilePicUrl || "/placeholder.svg"} alt={project.ownerUsername} />
+              <AvatarImage 
+                src={project.ownerProfilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.ownerUsername}`} 
+                alt={project.ownerUsername} 
+              />
               <AvatarFallback className="bg-teal-600 text-white text-xs font-semibold">
                 {project.ownerUsername}
               </AvatarFallback>

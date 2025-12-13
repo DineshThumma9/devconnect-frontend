@@ -7,13 +7,18 @@ export default function OAuthCallbackPage() {
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
     const { setAccessToken, setRefreshToken } = useAuthStore()
-    const { setUserEmail } = useInitStore()
+    const { setUserEmail, setUsername, setName, setProfilePic, interestsCompleted } = useInitStore()
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const token = searchParams.get("token")
         const email = searchParams.get("email")
+        const username = searchParams.get("username")
+        const profilePicUrl = searchParams.get("profilePicUrl")
         const errorParam = searchParams.get("error")
+
+        console.log("🔐 OAuth Callback - params:", { token: !!token, email, username, profilePicUrl })
+        console.log("🔐 OAuth Callback - interestsCompleted:", interestsCompleted)
 
         // Handle OAuth error
         if (errorParam) {
@@ -27,15 +32,32 @@ export default function OAuthCallbackPage() {
             // Store tokens in Zustand (which persists to localStorage)
             setAccessToken(token)
             setRefreshToken(token) // If backend provides separate refresh token, use that
+            
+            // Store user data
             setUserEmail(email)
+            if (username) setUsername(username)
+            if (profilePicUrl) setProfilePic(profilePicUrl)
+            if (username) setName(username) // Use username as name if not provided
+            
+            console.log("✅ User data stored:", { email, username, profilePicUrl })
 
-            // Redirect to app
-            navigate("/app")
+            // Check interestsCompleted from store directly to get latest value
+            const currentInterestsCompleted = useInitStore.getState().interestsCompleted
+            console.log("🎯 Current interestsCompleted value:", currentInterestsCompleted)
+            
+            // Redirect to interests page if not completed, otherwise go to app
+            if (currentInterestsCompleted) {
+                console.log("✅ Interests already completed - going to /app")
+                navigate("/app")
+            } else {
+                console.log("⚠️ Interests not completed - going to /interests")
+                navigate("/interests")
+            }
         } else {
             setError("Missing authentication data from OAuth provider")
             setTimeout(() => navigate("/login"), 3000)
         }
-    }, [searchParams, navigate, setAccessToken, setRefreshToken, setUserEmail])
+    }, [searchParams, navigate, setAccessToken, setRefreshToken, setUserEmail, setUsername, setName, setProfilePic, interestsCompleted])
 
     if (error) {
         return (

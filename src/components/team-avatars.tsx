@@ -19,7 +19,10 @@ export function TeamAvatars({ members, maxVisible = 5 }: TeamAvatarsProps) {
     <div className="flex -space-x-2">
       {visibleMembers.map((member) => (
         <Avatar key={member.id} className="w-10 h-10 border-2 border-gray-900">
-          <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
+          <AvatarImage 
+            src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`} 
+            alt={member.name} 
+          />
           <AvatarFallback className="bg-gray-800 text-white text-xs">
             {member.name
               .split(" ")

@@ -21,7 +21,7 @@ export function RegisterForm({
     const [isLoading, setIsLoading] = useState(false)
 
     const { setAccessToken, setRefreshToken } = useAuthStore()
-    const { setUserEmail } = useInitStore()
+    const { setUserEmail, setUsername: setStoreUsername, setName, setProfilePic } = useInitStore()
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -42,11 +42,23 @@ export function RegisterForm({
 
         try {
             const res = await register(username, password, email)
-            if (res?.accessToken && res?.refreshToken) {
+            console.log("📥 Registration response:", res)
+            
+            if (res?.accessToken && res?.refreshToken && res?.user) {
+                // Store tokens
                 setAccessToken(res.accessToken)
                 setRefreshToken(res.refreshToken)
-                setUserEmail(email)
-                navigate("/app")
+                
+                // Store user data in initStore
+                setUserEmail(res.user.email)
+                setStoreUsername(res.user.username)
+                setProfilePic(res.user.profilePicUrl || "")
+                setName(res.user.username) // Use username as name if name not provided
+                
+                console.log("✅ User data stored:", { email: res.user.email, username: res.user.username, profilePicUrl: res.user.profilePicUrl })
+                
+                // Redirect to interests page for first-time setup
+                navigate("/interests")
             } else {
                 setError("Registration failed. Please try again.")
             }

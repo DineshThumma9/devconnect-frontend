@@ -16,7 +16,10 @@ const SuggestedConnections = ({ connection }: Props) => {
         <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition-colors group">
             <div className="flex items-center gap-3 flex-1 min-w-0">
                 <Avatar className="ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all">
-                    <AvatarImage src={connection.profile_pic || "/placeholder.svg"} alt={connection.username} />
+                    <AvatarImage 
+                        src={connection.profile_pic || `https://api.dicebear.com/7.x/avataaars/svg?seed=${connection.username}`} 
+                        alt={connection.username} 
+                    />
                     <AvatarFallback className="bg-teal-600 text-white font-semibold">
                         {connection.username.substring(0, 2).toUpperCase()}
                     </AvatarFallback>

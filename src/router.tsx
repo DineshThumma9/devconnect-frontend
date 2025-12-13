@@ -6,6 +6,7 @@ import HomePage from "@/pages/HomePage"
 import ProjectDetailsPage from "@/pages/ProjectDetailsPage"
 import UserProfilePage from "@/pages/UserProfilePage"
 import OAuthCallbackPage from "@/pages/OAuthCallbackPage"
+import InterestsPage from "@/pages/InterestsPage"
 import PublicRoute from "@/router/PublicRoute"
 import PrivateRoute from "@/router/PrivateRoute"
 
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
   {
     element: <PrivateRoute />,
     children: [
+      { path: "/interests", element: <InterestsPage /> },
       {
         element: <Layout />,
         children: [

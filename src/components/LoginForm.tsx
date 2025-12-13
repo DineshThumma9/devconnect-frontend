@@ -16,7 +16,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
     const [isLoading, setIsLoading] = useState(false)
 
     const { setAccessToken, setRefreshToken } = useAuthStore()
-    const { setUserEmail } = useInitStore()
+    const { setUserEmail, setUsername, setName, setProfilePic } = useInitStore()
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -26,10 +26,37 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
 
         try {
             const res = await loginUser({ email, password })
-            if (res?.success) {
-                setAccessToken(res.data.accessToken)
-                setRefreshToken(res.data.refreshToken)
-                setUserEmail(email)
+            console.log("📥 Full Login response:", JSON.stringify(res, null, 2))
+            console.log("📥 res.success:", res?.success)
+            console.log("📥 res.data:", res?.data)
+            console.log("📥 res.data.user:", res?.data?.user)
+            
+            if (res?.success && res.data) {
+                const { accessToken, refreshToken, user } = res.data
+                
+                console.log("🔍 Extracted from res.data:", { accessToken: !!accessToken, refreshToken: !!refreshToken, user })
+                
+                // Store tokens
+                setAccessToken(accessToken)
+                setRefreshToken(refreshToken)
+                
+                // Store user data in initStore
+                if (user) {
+                    console.log("👤 User object:", user)
+                    console.log("👤 user.email:", user.email)
+                    console.log("👤 user.username:", user.username)
+                    console.log("👤 user.profilePicUrl:", user.profilePicUrl)
+                    
+                    setUserEmail(user.email)
+                    setUsername(user.username)
+                    setProfilePic(user.profilePicUrl || "")
+                    setName(user.username) // Use username as name if name not provided
+                    
+                    console.log("✅ User data stored:", { email: user.email, username: user.username, profilePicUrl: user.profilePicUrl })
+                } else {
+                    console.error("❌ No user object in response!")
+                }
+                
                 navigate("/app")
             } else {
                 setError("Invalid email or password")

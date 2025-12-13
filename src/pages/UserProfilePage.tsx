@@ -19,26 +19,35 @@ export default function UserProfilePage() {
     const [activeTab, setActiveTab] = useState("overview")
 
     const {userData, featuredProjects, allProjects} = useConstants();
-    const {user_email} = useInitStore();
+    const {user_email, username} = useInitStore();
 
-    const [userProjects, setUserProjects] = useState<ProjectResponseType[]>([]); // Placeholder for user projects
-    const [userPosts, setUserPosts] = useState<PostResponseType[]>([]); // Placeholder for user posts
+    const [userProjects, setUserProjects] = useState<ProjectResponseType[]>([]);
+    const [userPosts, setUserPosts] = useState<PostResponseType[]>([]);
 
-    useEffect(() => {   
-        getUserProjects();
-        getUserPosts();
-
+    useEffect(() => {
+        if (user_email) {
+            console.log("Fetching data for user:", user_email);
+            getUserProjects();
+            getUserPosts();
+        }
     }, [user_email]);
-
-    const getUserProjects = async () =>  {
-        const response = await getProjectsByUser(user_email);
-        setUserProjects(response);
-
+    const getUserProjects = async () => {
+        try {
+            const response = await getProjectsByUser(user_email);
+            setUserProjects(response);
+        } catch (error) {
+            console.error("Error fetching projects:", error);
+        }
     }
 
     const getUserPosts = async () => {
-      const response = await getPostsByUser(user_email);
-      setUserPosts(response);
+        try {
+            const response = await getPostsByUser(user_email);
+            console.log("Posts fetched:", response);
+            setUserPosts(response);
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+        }
     }
 
     return (
@@ -46,7 +55,7 @@ export default function UserProfilePage() {
 
             <div className="w-full">
                 {/* Profile Header */}
-                <ProfileSections/>
+                <ProfileSections isOwnProfile={true} />
 
                 {/* Profile Content */}
                 <div className="max-w-6xl mx-auto px-6 py-8">
@@ -67,19 +76,19 @@ export default function UserProfilePage() {
                         </TabsList>
 
                         <TabsContent value="overview">
-                            {/* Featured Projects */}
-                            <div className="mb-12">
-                                <h2 className="text-2xl font-semibold mb-6">All Posts</h2>
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-6">Your Posts</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userPosts.map((post) => (
-                                            <PostCard key={post.postId} post={post} />
-                                        ))}
+                                        <PostCard key={post.postId} post={post} />
+                                    ))}
                                 </div>
                             </div>
+                        </TabsContent>
 
-                            {/* All Projects */}
+                        <TabsContent value="projects">
                             <div>
-                                <h2 className="text-2xl font-semibold mb-6">All Projects</h2>
+                                <h2 className="text-2xl font-semibold mb-6">Your Projects</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userProjects.map((project) => (
                                         <ProjectCard key={project.id} project={project} />
@@ -87,14 +96,6 @@ export default function UserProfilePage() {
                                 </div>
                             </div>
                         </TabsContent>
-
-                        {/* <TabsContent value="projects">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[...featuredProjects, ...allProjects].map((project) => (
-                                    <ProjectCard key={project.id} {...project} />
-                                ))}
-                            </div>
-                        </TabsContent> */}
 
                         {/* <TabsContent value="skills">
                             <div className="bg-gray-900 rounded-lg p-6">

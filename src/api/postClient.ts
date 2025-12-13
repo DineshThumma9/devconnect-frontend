@@ -5,29 +5,22 @@ import { z } from "zod";
 
 
 
-export const postResSchema = z.object({
-    postId: z.string(),
-    title: z.string(),
-    content: z.string(),
-    ownerUsername: z.string(),
-    ownerProfilePic: z.string().url(),
-    createdAt: z.string().datetime(),
-    updatesAt: z.string().datetime(),
-    likes: z.number(),
-    comments: z.number(),
-    shares: z.number(),
-    media: z.array(z.string())
-});
+// Use shared schema from entities
+import { PostResponse } from "@/entities/Post";
+
+export const postResSchema = PostResponse;
 
 
 
-export const createPost = async (title: string, body: string, media: File[], tags: string[]) => {
+export const createPost = async (title: string, content: string, media: File[], tags: string[]) => {
     const postReq = {
         title,
-        body,
+        content,  // Changed from 'body' to match backend DTO
         media,
         tags
     };
+
+    console.log("📤 Sending post request:", postReq);
 
     return postInstance.post("/create", postReq, {
         headers: {
@@ -47,10 +40,10 @@ export const deletePost = async (postId: string) => {
 };
 
 
-export const updatePost = async (title: string, body: string, media: File[]) => {
+export const updatePost = async (title: string, content: string, media: File[]) => {
     const postReq = {
         title,
-        body,
+        content,
         media
     };
 
@@ -80,9 +73,16 @@ export const getSuggestedConnections = async () => {
 
 export const getPostsByUser = async (username: string): Promise<z.infer<typeof postResSchema>[]> => {
     const response = await postInstance.get(`/get-posts/${username}`);
-    const parsed = response.data.map((post: unknown) => {
+    console.log("🔍 Raw posts from backend:", response.data);
+    console.log("🔍 First post shape:", response.data[0]);
+    
+    const parsed = response.data.map((post: unknown, index: number) => {
         const result = postResSchema.safeParse(post);
-        if (!result.success) throw new Error("Invalid post format");
+        if (!result.success) {
+            console.error(`❌ Post ${index} validation failed:`, result.error.format());
+            console.error(`❌ Failed post data:`, post);
+            throw new Error("Invalid post format");
+        }
         return result.data;
     });
     return parsed;

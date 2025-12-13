@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useEffect } from "react"
 import useAuthStore from "@/store/authStore"
 import useInitStore from "@/store/initStore"
-import { axiosInstance } from "@/api/apiClient"
+import { authInstance } from "@/api/apiClient"
 import { useNavigate, Link } from "react-router-dom"
 import { Separator } from "@/components/ui/separator"
 
@@ -26,34 +26,25 @@ export function Navbar() {
     } = useInitStore()
     const navigate = useNavigate()
 
+    // Debug: Log all initStore values
+    useEffect(() => {
+        console.log("📊 InitStore State:", {
+            user_email,
+            username,
+            name,
+            profile_pic,
+            interestsCompleted: useInitStore.getState().interestsCompleted
+        })
+    }, [user_email, username, name, profile_pic])
+
     const handleLogout = () => {
         logout()
         clearUser()
         navigate("/login")
     }
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                if (accessToken) {
-                    const res = await axiosInstance.get(`/get-user/${user_email}`, {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    })
-
-                    const { name, username, profile_pic } = res.data
-                    setName(name)
-                    setUsername(username)
-                    setProfilePic(profile_pic)
-                }
-            } catch (error) {
-                console.error("Failed to fetch user info:", error)
-            }
-        }
-
-        fetchUser()
-    }, [accessToken, setName, setUsername, setProfilePic, user_email])
+    // No need to fetch user data - it's already set during login/signup
+    // The backend now returns user data in the auth response
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60">
@@ -104,7 +95,7 @@ export function Navbar() {
                                 <Avatar className="h-10 w-10">
                                     <AvatarImage src={profile_pic} alt="Profile" />
                                     <AvatarFallback className="bg-teal-600 text-white">
-                                        {username?.[0]?.toUpperCase() || "U"}
+                                        {username || "U"}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
@@ -115,8 +106,8 @@ export function Navbar() {
                         >
                             <div className="flex flex-col space-y-1">
                                 <div className="px-2 py-1.5">
-                                    <p className="text-sm font-medium text-white">{name || "User"}</p>
-                                    <p className="text-xs text-gray-400">@{username || "username"}</p>
+                                    <p className="text-sm font-medium text-white">{user_email.split("@")[0].toUpperCase() || "User"}</p>
+                                    <p className="text-xs text-gray-400">@{user_email.split("@")[0] || "username"}</p>
                                     <p className="text-xs text-gray-500 truncate">{user_email}</p>
                                 </div>
                                 <Separator className="bg-gray-700" />

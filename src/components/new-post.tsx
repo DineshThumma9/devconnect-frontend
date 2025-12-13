@@ -7,6 +7,7 @@ import {Input} from "@/components/ui/input.tsx";
 import {Badge} from "@/components/ui/badge.tsx";
 import React, {useState} from "react";
 import {createPost} from "@/api/postClient.ts"
+import { set } from "zod";
 
 
 const NewPost = () => {
@@ -48,10 +49,18 @@ const NewPost = () => {
     }
 
     const handleCreatePost = () => {
-        console.log("Creating post:", newPost)
-        setIsNewPostOpen(false)
-        createPost(newPost.title, newPost.content, newPost.image, newPost.tags)
+        console.log("Creating post:", newPost);
 
+        setIsNewPostOpen(false);
+        console.log("Post Content:",newPost.content);
+        createPost(newPost.title, newPost.content, newPost.image ? [newPost.image] : [], newPost.tags);
+        setNewPost({
+            title: "",
+            content: "",
+            image: null,
+            tags: [],
+        })
+        setNewTag("")
     }
 
 
