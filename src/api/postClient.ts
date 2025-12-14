@@ -13,18 +13,27 @@ export const postResSchema = PostResponse;
 
 
 export const createPost = async (title: string, content: string, media: File[], tags: string[]) => {
+    const formData = new FormData();
+    
+    // Add postReq as JSON blob
     const postReq = {
         title,
-        content,  // Changed from 'body' to match backend DTO
-        media,
+        content,
         tags
     };
+    
+    formData.append('post', new Blob([JSON.stringify(postReq)], { type: 'application/json' }));
+    
+  
+    media.forEach((file) => {
+        formData.append('images', file);
+    });
 
-    console.log("📤 Sending post request:", postReq);
+    console.log("📤 Sending post request:", { postReq, imageCount: media.length });
 
-    return postInstance.post("/create", postReq, {
+    return postInstance.post("/create", formData, {
         headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'multipart/form-data'
         }
     });
 };

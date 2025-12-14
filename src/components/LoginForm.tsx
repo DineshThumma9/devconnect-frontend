@@ -16,7 +16,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
     const [isLoading, setIsLoading] = useState(false)
 
     const { setAccessToken, setRefreshToken } = useAuthStore()
-    const { setUserEmail, setUsername, setName, setProfilePic } = useInitStore()
+    const { setUserEmail, setUsername, setName, setProfilePic, setInterestsCompleted } = useInitStore()
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -26,39 +26,59 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
 
         try {
             const res = await loginUser({ email, password })
-            console.log("📥 Full Login response:", JSON.stringify(res, null, 2))
-            console.log("📥 res.success:", res?.success)
-            console.log("📥 res.data:", res?.data)
-            console.log("📥 res.data.user:", res?.data?.user)
+            console.log("📥 FULL LOGIN RESPONSE:", JSON.stringify(res, null, 2))
+            console.log("📥 Response type:", typeof res)
+            console.log("📥 Response keys:", Object.keys(res || {}))
             
-            if (res?.success && res.data) {
-                const { accessToken, refreshToken, user } = res.data
+            console.log("🔍 Full response object:", res)
+            // loginUser now returns the data directly: { accessToken, refreshToken, user }
+            if (res?.accessToken && res?.refreshToken && res?.user) {
+                const { accessToken, refreshToken, user } = res
                 
-                console.log("🔍 Extracted from res.data:", { accessToken: !!accessToken, refreshToken: !!refreshToken, user })
+                console.log("🔍 Extracted tokens and user:", { 
+                    hasAccessToken: !!accessToken, 
+                    hasRefreshToken: !!refreshToken, 
+                    user 
+                })
                 
                 // Store tokens
                 setAccessToken(accessToken)
                 setRefreshToken(refreshToken)
                 
                 // Store user data in initStore
-                if (user) {
-                    console.log("👤 User object:", user)
-                    console.log("👤 user.email:", user.email)
-                    console.log("👤 user.username:", user.username)
-                    console.log("👤 user.profilePicUrl:", user.profilePicUrl)
-                    
-                    setUserEmail(user.email)
-                    setUsername(user.username)
-                    setProfilePic(user.profilePicUrl || "")
-                    setName(user.username) // Use username as name if name not provided
-                    
-                    console.log("✅ User data stored:", { email: user.email, username: user.username, profilePicUrl: user.profilePicUrl })
-                } else {
-                    console.error("❌ No user object in response!")
-                }
+                console.log("👤 Full user object:", user)
+                console.log("👤 user.name:", user.name)
+                console.log("👤 user.username:", user.username)
+                console.log("👤 user.email:", user.email)
+                console.log("👤 user.profilePicUrl:", user.profilePicUrl)
                 
-                navigate("/app")
+                setUserEmail(user.email)
+                setUsername(user.username)
+                setProfilePic(user.profilePicUrl || "")
+                setName(user.name || user.username) // Use name if available, otherwise username
+                
+                // Check if user has completed interests based on backend data
+                const hasCompletedInterests = user.interests && user.interests.length > 0
+                setInterestsCompleted(hasCompletedInterests)
+                
+                console.log("✅ Calling store setters with:", { 
+                    email: user.email, 
+                    username: user.username, 
+                    name: user.name || user.username,
+                    profilePicUrl: user.profilePicUrl,
+                    interests: user.interests,
+                    hasCompletedInterests
+                })
+                
+                // Wait 2 seconds to see logs before navigating
+                console.log("⏳ Waiting 2 seconds before navigation...")
+                await new Promise(resolve => setTimeout(resolve, 2000))
+                console.log("🚀 Navigating based on interests completion:", hasCompletedInterests ? "/app" : "/interests")
+                
+                // Navigate to interests if not completed, otherwise to app
+                navigate(hasCompletedInterests ? "/app" : "/interests")
             } else {
+                console.error("❌ Invalid response structure:", res)
                 setError("Invalid email or password")
             }
         } catch (err) {
@@ -88,7 +108,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
                     <Label htmlFor="email">Email</Label>
                     <Input
                         id="email"
-                        type="email"
+                      
                         placeholder="john@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

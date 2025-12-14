@@ -27,7 +27,8 @@ APIClient.interceptors.response.use((request) => request,
 
 const LoginRequest = z.object({
     accessToken:z.string(),
-    refreshToken:z.string()
+    refreshToken:z.string(),
+    user: UserResponse
 })
 
 export const register = async (username: string, password: string, email: string, name?: string, profile_pic?: string) => {
@@ -47,13 +48,19 @@ export const register = async (username: string, password: string, email: string
         headers: {"Content-Type": "application/json"}
     })
 
+    console.log("📥 Full register response:", res.data)
+    console.log("📥 Response keys:", Object.keys(res.data || {}))
+    console.log("📥 User object:", res.data.user)
+
     const parsed = LoginRequest.safeParse(res.data)
 
     if (!parsed.success) {
-        console.error("Zod validation failed:", parsed.error);
-        return null;
+        console.error("❌ Zod validation failed:", parsed.error.errors);
+        console.error("❌ Received data:", JSON.stringify(res.data, null, 2));
+        throw new Error("Response validation failed: " + JSON.stringify(parsed.error.errors));
     }
 
+    console.log("✅ Register validation passed:", parsed.data)
     return parsed.data;
 
 }
@@ -133,11 +140,21 @@ export const loginUser = async (
         },
     });
 
+    console.log("📥 Raw login response:", res.data);
     if (res.status != 200) {
         console.log(res.data)
         console.log(res.data.error)
          throw new Error("Some Error has occured")
     }
 
-    return  LoginRequest.safeParse(res.data);
+    const parsed = LoginRequest.safeParse(res.data);
+    
+    if (!parsed.success) {
+        console.error("❌ Login validation failed:", parsed.error.errors);
+        console.error("❌ Received data:", JSON.stringify(res.data, null, 2));
+        throw new Error("Response validation failed: " + JSON.stringify(parsed.error.errors));
+    }
+    
+    console.log("✅ Login validation passed:", parsed.data)
+    return parsed.data;
 };

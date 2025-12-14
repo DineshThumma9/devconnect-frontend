@@ -21,7 +21,7 @@ export function RegisterForm({
     const [isLoading, setIsLoading] = useState(false)
 
     const { setAccessToken, setRefreshToken } = useAuthStore()
-    const { setUserEmail, setUsername: setStoreUsername, setName, setProfilePic } = useInitStore()
+    const { setUserEmail, setUsername: setStoreUsername, setName, setProfilePic, setInterestsCompleted } = useInitStore()
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +42,8 @@ export function RegisterForm({
 
         try {
             const res = await register(username, password, email)
-            console.log("📥 Registration response:", res)
+            console.log("📥 FULL REGISTRATION RESPONSE:", JSON.stringify(res, null, 2))
+            console.log("📥 Response keys:", Object.keys(res || {}))
             
             if (res?.accessToken && res?.refreshToken && res?.user) {
                 // Store tokens
@@ -50,16 +51,33 @@ export function RegisterForm({
                 setRefreshToken(res.refreshToken)
                 
                 // Store user data in initStore
+                console.log("👤 Full user object from registration:", res.user)
+                console.log("👤 user.name:", res.user.name)
+                console.log("👤 user.username:", res.user.username)
+                console.log("👤 user.email:", res.user.email)
+                
                 setUserEmail(res.user.email)
                 setStoreUsername(res.user.username)
                 setProfilePic(res.user.profilePicUrl || "")
-                setName(res.user.username) // Use username as name if name not provided
+                setName(res.user.name || res.user.username) // Use name if available, otherwise username
                 
-                console.log("✅ User data stored:", { email: res.user.email, username: res.user.username, profilePicUrl: res.user.profilePicUrl })
+                // New registrations typically don't have interests yet
+                const hasCompletedInterests = res.user.interests && res.user.interests.length > 0
+                setInterestsCompleted(hasCompletedInterests)
                 
-                // Redirect to interests page for first-time setup
+                console.log("✅ Registration data stored:", { 
+                    email: res.user.email, 
+                    username: res.user.username, 
+                    name: res.user.name || res.user.username,
+                    profilePicUrl: res.user.profilePicUrl,
+                    interests: res.user.interests,
+                    hasCompletedInterests
+                })
+                
+                // Always redirect new users to interests page
                 navigate("/interests")
             } else {
+                console.error("❌ Invalid registration response:", res)
                 setError("Registration failed. Please try again.")
             }
         } catch (err) {

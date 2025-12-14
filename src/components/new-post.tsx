@@ -18,17 +18,28 @@ const NewPost = () => {
     const [newPost, setNewPost] = useState({
         title: "",
         content: "",
-        image: null as File | null,
+        media: [] as File[],
         tags: [] as string[],
     })
     const [newTag, setNewTag] = useState("")
 
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            setNewPost((prev) => ({...prev, image: file}))
+    const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files) {
+            const newFiles = Array.from(files)
+            setNewPost((prev) => ({
+                ...prev,
+                media: [...prev.media, ...newFiles]
+            }))
         }
+    }
+
+    const removeMedia = (index: number) => {
+        setNewPost((prev) => ({
+            ...prev,
+            media: prev.media.filter((_, i) => i !== index)
+        }))
     }
 
     const addTag = () => {
@@ -53,11 +64,11 @@ const NewPost = () => {
 
         setIsNewPostOpen(false);
         console.log("Post Content:",newPost.content);
-        createPost(newPost.title, newPost.content, newPost.image ? [newPost.image] : [], newPost.tags);
+        createPost(newPost.title, newPost.content, newPost.media, newPost.tags);
         setNewPost({
             title: "",
             content: "",
-            image: null,
+            media: [],
             tags: [],
         })
         setNewTag("")
@@ -103,22 +114,48 @@ const NewPost = () => {
                             />
                         </div>
 
-                        {/* Image Upload */}
+                        {/* Media Upload */}
                         <div>
-                            <Label htmlFor="image" className="text-gray-200 font-medium">Upload Image</Label>
-                            <div className="flex items-center gap-2">
-                                <input id="image" type="file" accept="image/*" onChange={handleImageUpload}
-                                       className="hidden"/>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => document.getElementById("image")?.click()}
-                                    className="bg-teal-600 text-white border-teal-600 hover:bg-transparent hover:text-teal-400 hover:border-teal-500 transition-all"
-                                >
-                                    <Camera className="w-4 h-4 mr-2"/>
-                                    {newPost.image ? "Change Image" : "Add Image"}
-                                </Button>
-                                {newPost.image && <span className="text-sm text-gray-300">{newPost.image.name}</span>}
+                            <Label htmlFor="media" className="text-gray-200 font-medium">Upload Images</Label>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <input 
+                                        id="media" 
+                                        type="file" 
+                                        accept="image/*" 
+                                        multiple
+                                        onChange={handleMediaUpload}
+                                        className="hidden"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => document.getElementById("media")?.click()}
+                                        className="bg-teal-600 text-white border-teal-600 hover:bg-transparent hover:text-teal-400 hover:border-teal-500 transition-all"
+                                    >
+                                        <Camera className="w-4 h-4 mr-2"/>
+                                        {newPost.media.length > 0 ? `${newPost.media.length} image(s)` : "Add Images"}
+                                    </Button>
+                                </div>
+                                {newPost.media.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {newPost.media.map((file, index) => (
+                                            <Badge 
+                                                key={index} 
+                                                variant="secondary" 
+                                                className="bg-gray-800 border border-gray-600 text-gray-300"
+                                            >
+                                                {file.name}
+                                                <button 
+                                                    onClick={() => removeMedia(index)} 
+                                                    className="ml-2 text-gray-400 hover:text-red-400 transition-colors"
+                                                >
+                                                    <X className="w-3 h-3"/>
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
