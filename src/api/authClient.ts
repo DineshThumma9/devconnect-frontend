@@ -130,13 +130,14 @@ export const loginUser = async (
         }) => {
 
 
-    const form = new URLSearchParams();
-    form.append("username", data.email);
-    form.append("password", data.password);
+    const form = {
+        "email": data.email,
+        "password": data.password
+    }   
 
     const res = await APIClient.post("/login", form, {
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
         },
     });
 

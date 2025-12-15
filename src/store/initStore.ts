@@ -24,7 +24,7 @@ type UserState = {
 const useInitStore = create<UserState>()(
     persist(
         (set) => ({
-             user_email:"",
+            user_email:"",
             profile_pic:"",
             username:"",
             name:"",

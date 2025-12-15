@@ -2,38 +2,39 @@
 
 import {useEffect, useState} from "react"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-
-import useConstants from "@/hooks/useConstants.ts";
+import { useParams } from "react-router-dom"
 import ProjectCard from "@/components/project-card.tsx";
 import ProfileSections from "@/components/profile-sections.tsx";
-import { projectInstance } from "@/api/apiClient";
-import useInitStore from "@/store/initStore";
-import { get } from "http";
 import { getProjectsByUser } from "@/api/projectClient";
 import { getPostsByUser } from "@/api/postClient";
 import PostCard from "@/components/post-card";
 import { ProjectResponseType } from "@/entities/Project";
 import { PostResponseType } from "@/entities/Post";
+import useInitStore from "@/store/initStore";
 
 export default function UserProfilePage() {
     const [activeTab, setActiveTab] = useState("overview")
+    const { username: urlUsername } = useParams<{ username: string }>()
+    const { username: loggedInUsername } = useInitStore()
 
-    const {userData, featuredProjects, allProjects} = useConstants();
-    const {user_email, username} = useInitStore();
+    // Determine which username to use - URL param or logged-in user
+    const profileUsername = urlUsername || loggedInUsername
+    const isOwnProfile = profileUsername === loggedInUsername
 
     const [userProjects, setUserProjects] = useState<ProjectResponseType[]>([]);
     const [userPosts, setUserPosts] = useState<PostResponseType[]>([]);
 
     useEffect(() => {
-        if (user_email) {
-            console.log("Fetching data for user:", user_email);
+        if (profileUsername) {
+            console.log("Fetching data for user:", profileUsername);
             getUserProjects();
             getUserPosts();
         }
-    }, [user_email]);
+    }, [profileUsername]);
+    
     const getUserProjects = async () => {
         try {
-            const response = await getProjectsByUser(user_email);
+            const response = await getProjectsByUser(profileUsername!);
             setUserProjects(response);
         } catch (error) {
             console.error("Error fetching projects:", error);
@@ -42,7 +43,7 @@ export default function UserProfilePage() {
 
     const getUserPosts = async () => {
         try {
-            const response = await getPostsByUser(user_email);
+            const response = await getPostsByUser(profileUsername!);
             console.log("Posts fetched:", response);
             setUserPosts(response);
         } catch (error) {
@@ -55,7 +56,7 @@ export default function UserProfilePage() {
 
             <div className="w-full">
                 {/* Profile Header */}
-                <ProfileSections isOwnProfile={true} />
+                <ProfileSections isOwnProfile={isOwnProfile} profileUsername={profileUsername!} />
 
                 {/* Profile Content */}
                 <div className="max-w-6xl mx-auto px-6 py-8">
@@ -77,7 +78,7 @@ export default function UserProfilePage() {
 
                         <TabsContent value="overview">
                             <div>
-                                <h2 className="text-2xl font-semibold mb-6">Your Posts</h2>
+                                <h2 className="text-2xl font-semibold mb-6">{isOwnProfile ? "Your Posts" : `${profileUsername}'s Posts`}</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userPosts.map((post) => (
                                         <PostCard key={post.postId} post={post} />
@@ -88,7 +89,7 @@ export default function UserProfilePage() {
 
                         <TabsContent value="projects">
                             <div>
-                                <h2 className="text-2xl font-semibold mb-6">Your Projects</h2>
+                                <h2 className="text-2xl font-semibold mb-6">{isOwnProfile ? "Your Projects" : `${profileUsername}'s Projects`}</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {userProjects.map((project) => (
                                         <ProjectCard key={project.id} project={project} />

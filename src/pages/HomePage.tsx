@@ -27,7 +27,7 @@ type Connection = {
 const POLLING_INTERVAL = 5 * 60 * 1000 // 5 minutes in milliseconds
 
 export default function HomePage() {
-    const { username } = useInitStore()
+    const { username ,user_email} = useInitStore()
     
     const [posts, setPosts] = useState<Post[]>([])
     const [projects, setProjects] = useState<Project[]>([])
@@ -46,7 +46,7 @@ export default function HomePage() {
         try {
             // Fetch posts
             setIsLoadingPosts(true)
-            const postsData = await fetchForYouPosts()
+            const postsData = await fetchForYouPosts(username)
             setPosts(postsData)
         } catch (err) {
             console.error("Failed to fetch posts:", err)
@@ -58,7 +58,7 @@ export default function HomePage() {
         try {
             // Fetch projects
             setIsLoadingProjects(true)
-            const projectsData = await fetchProjectRecommendations()
+            const projectsData = await fetchProjectRecommendations(username)
             setProjects(projectsData)
         } catch (err) {
             console.error("Failed to fetch projects:", err)
@@ -80,14 +80,14 @@ export default function HomePage() {
         }
     }, [username])
 
-    // Initial fetch
+    // Initial fetch and polling combined
     useEffect(() => {
+        // Fetch immediately on mount
         fetchAllData()
-    }, [fetchAllData])
 
-    // Polling every 5 minutes
-    useEffect(() => {
+        // Then poll every 5 minutes
         const intervalId = setInterval(() => {
+            console.log("🔄 Polling - fetching updated data...")
             fetchAllData()
         }, POLLING_INTERVAL)
 

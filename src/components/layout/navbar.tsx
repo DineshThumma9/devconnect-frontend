@@ -95,7 +95,7 @@ export function Navbar() {
                                 <Avatar className="h-10 w-10">
                                     <AvatarImage src={profile_pic} alt="Profile" />
                                     <AvatarFallback className="bg-teal-600 text-white">
-                                        {username || "U"}
+                                        {username ? username.substring(0, 2).toUpperCase() : "U"}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
@@ -106,15 +106,15 @@ export function Navbar() {
                         >
                             <div className="flex flex-col space-y-1">
                                 <div className="px-2 py-1.5">
-                                    <p className="text-sm font-medium text-white">{user_email.split("@")[0].toUpperCase() || "User"}</p>
-                                    <p className="text-xs text-gray-400">@{user_email.split("@")[0] || "username"}</p>
+                                    <p className="text-sm font-medium text-white">{name || username || "User"}</p>
+                                    <p className="text-xs text-gray-400">@{username || user_email?.split("@")[0] || "username"}</p>
                                     <p className="text-xs text-gray-500 truncate">{user_email}</p>
                                 </div>
                                 <Separator className="bg-gray-700" />
                                 <Button
                                     variant="ghost"
                                     className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700"
-                                    onClick={() => navigate(`/profiles/${username || "1"}`)}
+                                    onClick={() => navigate(`/profiles/${username || user_email?.split("@")[0] || "profile"}`)}
                                 >
                                     <UserIcon className="mr-2 h-4 w-4" />
                                     Profile

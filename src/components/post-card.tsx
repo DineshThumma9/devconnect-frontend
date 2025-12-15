@@ -3,12 +3,15 @@ import { Badge } from "@/components/ui/badge"
 import { Heart, MessageSquare, Share2 } from "lucide-react"
 import { postResSchema } from "@/api/postClient"
 import type { z } from "zod"
+import { useNavigate } from "react-router-dom"
 
 interface Props {
     post: z.infer<typeof postResSchema>
 }
 
 const PostCard = ({ post }: Props) => {
+    const navigate = useNavigate()
+    
     // Debug: log the post data
     console.log("PostCard received:", post)
     
@@ -28,6 +31,11 @@ const PostCard = ({ post }: Props) => {
     // Check if we have any displayable content
     const hasContent = post.title || post.content
     const displayUsername = post.ownerUsername || "Anonymous"
+
+    const onClickUsername = () => {
+        console.log(`Username @${displayUsername} clicked - navigating to profile`)
+        navigate(`/profiles/${displayUsername}`)
+    }
     
     console.log("Post display data:", {
         hasContent,
@@ -51,7 +59,10 @@ const PostCard = ({ post }: Props) => {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-white hover:text-teal-400 transition-colors cursor-pointer text-sm">
+                        <span 
+                            onClick={onClickUsername}
+                            className="font-semibold text-white hover:text-teal-400 transition-colors cursor-pointer text-sm"
+                        >
                             @{displayUsername}
                         </span>
                         <span className="text-gray-500 text-sm">•</span>
