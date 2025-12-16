@@ -1,7 +1,10 @@
+import { follow, unfollow } from "@/api/userClient";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import useConstants from "@/hooks/useConstants.ts";
 import useInitStore from "@/store/initStore";
+import { useState } from "react";
+import { set } from "zod";
 
 interface ProfileSectionsProps {
     isOwnProfile?: boolean;
@@ -10,8 +13,7 @@ interface ProfileSectionsProps {
 
 const ProfileSections = ({ isOwnProfile = false, profileUsername }: ProfileSectionsProps) => {
 
-    const {userData}=useConstants();
-    const { username: loggedInUsername, user_email, name } = useInitStore();
+    const { username: loggedInUsername, user_email, name, followings } = useInitStore();
 
     // Display the profile username, not the logged-in user's username
     const displayName = profileUsername;
@@ -21,6 +23,28 @@ const ProfileSections = ({ isOwnProfile = false, profileUsername }: ProfileSecti
         if (profileUsername) return profileUsername.substring(0, 2).toUpperCase();
         return 'U';
     };
+
+
+
+    
+
+
+    
+    const [isFollowing, setIsFollowing] = useState<boolean>(followings.includes(profileUsername));
+
+
+
+    const handleFollow = async () => {
+        if (isFollowing) {
+             setIsFollowing(false);
+             const res = await unfollow(profileUsername);
+        }
+        else{
+            setIsFollowing(true);
+            const res = await follow(profileUsername);
+        }
+    };
+
 
     return (
 
@@ -34,8 +58,9 @@ const ProfileSections = ({ isOwnProfile = false, profileUsername }: ProfileSecti
                 <p className="text-gray-400 mb-1">@{profileUsername}</p>
                 {/* <p className="text-gray-400 text-sm mb-6">{userData.joinDate}</p> */}
                 {!isOwnProfile && (
-                    <Button
-                        className="bg-gray-800 hover:bg-gray-700">{userData.isFollowing ? "Following" : "Follow"}</Button>
+                    <Button onClick={handleFollow}>
+                        {isFollowing ? 'Unfollow' : 'Follow'}
+                    </Button>
                 )}
             </div>
         </div>

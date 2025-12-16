@@ -42,6 +42,17 @@ export const fetchSuggestedConnectionsForUser = async (username: string) => {
         .filter(Boolean);
 };
 
+
+
+export const getTrendingPosts = async () => {
+    const response = await feedInstance.get("/trending/posts");
+    return response.data.map((post: unknown) => {
+        const parsed = postResSchema.safeParse(post);
+        if (!parsed.success) throw new Error("Invalid post format");
+        return parsed.data;
+    }
+    );
+}
 // Legacy endpoints (kept for backward compatibility)
 
 // // Fetch feed posts

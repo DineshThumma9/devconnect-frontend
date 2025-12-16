@@ -3,6 +3,8 @@ import {Layout} from "@/components/layout/layout"
 import LoginPage from "@/pages/LoginPage"
 import RegisterPage from "@/pages/RegisterPage"
 import HomePage from "@/pages/HomePage"
+import ChatPage from "./pages/ChatPage"
+import ExplorePage from "@/pages/ExplorePage"
 import ProjectDetailsPage from "@/pages/ProjectDetailsPage"
 import UserProfilePage from "@/pages/UserProfilePage"
 import OAuthCallbackPage from "@/pages/OAuthCallbackPage"
@@ -29,7 +31,9 @@ const router = createBrowserRouter([
         children: [
           { path: "/app", element: <HomePage /> },
           { path: "/projects/:id", element: <ProjectDetailsPage /> },
-          { path: "/profiles/:username", element: <UserProfilePage /> }
+          { path: "/profiles/:username", element: <UserProfilePage /> },
+          { path: "/explore", element: <ExplorePage /> },
+          { path: "/chat", element: <ChatPage /> }
         ]
       }
     ]

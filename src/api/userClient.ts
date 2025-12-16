@@ -55,3 +55,22 @@ export const saveUserInterests = async (interests: string[]) => {
     console.log("✅ Backend response:", response.data);
     return response.data;
 };
+
+
+
+export const follow = async (usernameToFollow: string) => {
+
+    const response = await axiosInstance.put(`/users/follow/${usernameToFollow}`)
+    console.log("✅ Follow response:", response.data);
+    return response.data;
+}
+
+
+export const unfollow = async (usernameToUnfollow: string) => {
+
+    const response = await axiosInstance.put(`/users/unfollow/${usernameToUnfollow}`)
+    console.log("✅ Unfollow response:", response.data);
+    return response.data;
+    
+}
+

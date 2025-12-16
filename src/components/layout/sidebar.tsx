@@ -27,13 +27,13 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
   const navigationItems = [
     { name: "Home", icon: Home, path: "/" },
-    { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+    // { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { name: "Projects", icon: ListChecks, path: "/projects/1" },
-    { name: "Community", icon: Users, path: "/community" },
+    // { name: "Community", icon: Users, path: "/community" },
     { name: "Explore", icon: Compass, path: "/explore" },
-    { name: "Notifications", icon: Bell, path: "/notifications" },
-    { name: "Messages", icon: MessageCircle, path: "/messages" },
-    { name: "Profile", icon: User, path: "/profile/1" },
+    //{ name: "Notifications", icon: Bell, path: "/notifications" },
+    { name: "Messages", icon: MessageCircle, path: "/chat" },
+    //{ name: "Profile", icon: User, path: "/profile/1" },
   ]
 
   return (
@@ -77,12 +77,12 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* New Post Button */}
-      <div className="p-3">
+      {/* <div className="p-3">
         <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
           <Plus className="h-4 w-4 flex-shrink-0" />
           {!isCollapsed && <span className="ml-2">New Project</span>}
         </Button>
-      </div>
+      </div> */}
     </div>
   )
 }

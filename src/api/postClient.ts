@@ -96,3 +96,23 @@ export const getPostsByUser = async (username: string): Promise<z.infer<typeof p
     });
     return parsed;
 }
+
+
+export const likeAPost = async (postId: string) => {
+    return postInstance.put(`/like/${postId}`);
+}
+
+export const unlikeAPost = async (postId: string) => {
+    return postInstance.delete(`/unlike/${postId}`);
+}
+
+export const shareAPost = async (postId: string, username: string) => {
+    return postInstance.post(`/share/${username}`);
+}
+
+export const commentOnPost = async (postId: string, comment: string, username: string) => {
+    return postInstance.put(`/comment/${postId}`, { postId,comment, username });
+}
+
+
+

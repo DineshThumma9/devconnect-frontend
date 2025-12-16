@@ -4,19 +4,27 @@ import {persist} from "zustand/middleware";
 
 
 type UserState = {
-    user_email:string,
-    profile_pic:string,
-    username:string,
-    name:string,
-    interestsCompleted:boolean
-
-
-
-    setUserEmail : (email:string)=>void,
-    setUsername:(username:string) => void,
-    setName:(name:string) => void,
-    setProfilePic:(profile_pic:string) => void,
-    setInterestsCompleted: (completed:boolean) => void,
+    id: string,
+    user_email: string,
+    profile_pic: string,
+    username: string,
+    name: string,
+    interests: string[],
+    followers: string[],
+    followings: string[],
+    subscribedProjects: string[],
+    interestsCompleted: boolean
+    
+    setId: (id: string) => void,
+    setUserEmail: (email: string) => void,
+    setUsername: (username: string) => void,
+    setName: (name: string) => void,
+    setProfilePic: (profile_pic: string) => void,
+    setInterests: (interests: string[]) => void,
+    setFollowers: (followers: string[]) => void,
+    setFollowings: (followings: string[]) => void,
+    setSubscribedProjects: (subscribedProjects: string[]) => void,
+    setInterestsCompleted: (completed: boolean) => void,
     clearUser: () => void
 
 }
@@ -24,35 +32,71 @@ type UserState = {
 const useInitStore = create<UserState>()(
     persist(
         (set) => ({
-            user_email:"",
-            profile_pic:"",
-            username:"",
-            name:"",
-            interestsCompleted:false,
+            id: "",
+            user_email: "",
+            profile_pic: "",
+            username: "",
+            name: "",
+            interests: [],
+            followers: [],
+            followings: [],
+            subscribedProjects: [],
+            interestsCompleted: false,
 
-            setName:(name:string) => {
+            setId: (id: string) => {
+                console.log("🏪 setId called with:", id)
+                set({id})
+            },
+            setName: (name: string) => {
                 console.log("🏪 setName called with:", name)
                 set({name})
             },
-            setUserEmail:(email:string) => {
+            setUserEmail: (email: string) => {
                 console.log("🏪 setUserEmail called with:", email)
-                set({user_email:email})
+                set({user_email: email})
             },
-            setProfilePic:(profile) => {
+            setProfilePic: (profile: string) => {
                 console.log("🏪 setProfilePic called with:", profile)
-                set({profile_pic:profile})
+                set({profile_pic: profile})
             },
-            setUsername:(username) => {
+            setUsername: (username: string) => {
                 console.log("🏪 setUsername called with:", username)
-                set({username:username})
+                set({username})
             },
-            setInterestsCompleted:(completed:boolean) => {
+            setInterests: (interests: string[]) => {
+                console.log("🏪 setInterests called with:", interests)
+                set({interests})
+            },
+            setFollowers: (followers: string[]) => {
+                console.log("🏪 setFollowers called with:", followers)
+                set({followers})
+            },
+            setFollowings: (followings: string[]) => {
+                console.log("🏪 setFollowings called with:", followings)
+                set({followings})
+            },
+            setSubscribedProjects: (subscribedProjects: string[]) => {
+                console.log("🏪 setSubscribedProjects called with:", subscribedProjects)
+                set({subscribedProjects})
+            },
+            setInterestsCompleted: (completed: boolean) => {
                 console.log("🏪 setInterestsCompleted called with:", completed)
-                set({interestsCompleted:completed})
+                set({interestsCompleted: completed})
             },
             clearUser: () => {
                 console.log("🏪 clearUser called")
-                set({user_email: "", profile_pic: "", username: "", name: "", interestsCompleted: false})
+                set({
+                    id: "",
+                    user_email: "",
+                    profile_pic: "",
+                    username: "",
+                    name: "",
+                    interests: [],
+                    followers: [],
+                    followings: [],
+                    subscribedProjects: [],
+                    interestsCompleted: false
+                })
             }
 
 
