@@ -11,6 +11,7 @@ import OAuthCallbackPage from "@/pages/OAuthCallbackPage"
 import InterestsPage from "@/pages/InterestsPage"
 import PublicRoute from "@/router/PublicRoute"
 import PrivateRoute from "@/router/PrivateRoute"
+import PostPage from "@/pages/PostPage"
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
           { path: "/app", element: <HomePage /> },
           { path: "/projects/:id", element: <ProjectDetailsPage /> },
           { path: "/profiles/:username", element: <UserProfilePage /> },
+          { path: "/posts/:id", element: <PostPage /> },
           { path: "/explore", element: <ExplorePage /> },
           { path: "/chat", element: <ChatPage /> }
         ]

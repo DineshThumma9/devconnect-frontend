@@ -7,6 +7,7 @@ import { z } from "zod";
 
 // Use shared schema from entities
 import { PostResponse } from "@/entities/Post";
+import { Comment, CommentType } from "@/entities/Comment";
 
 export const postResSchema = PostResponse;
 
@@ -66,7 +67,7 @@ export const updatePost = async (title: string, content: string, media: File[]) 
 
 
 export const getPost = async (id: string) => {
-    const response = await postInstance.get(`/id/${id}`);
+    const response = await postInstance.get(`/${id}`);
     const result = postResSchema.safeParse(response.data);
 
     return result.success ? result.data : null;
@@ -112,6 +113,23 @@ export const shareAPost = async (postId: string, username: string) => {
 
 export const commentOnPost = async (postId: string, comment: string, username: string) => {
     return postInstance.put(`/comment/${postId}`, { postId,comment, username });
+}
+
+
+
+export const getCommentsForPost = async (postId: string) => {
+ const res = await postInstance.get(`/comments/${postId}`);
+ const comments = res.data.map((comment:unknown) => {
+        const result = Comment.safeParse(comment);
+        if (!result.success) {
+            console.error("❌ Comment validation failed:", result.error.format());
+            console.error("❌ Failed comment data:", comment);
+            throw new Error("Invalid comment format");
+        }
+        return result.data;
+
+})
+return comments;
 }
 
 

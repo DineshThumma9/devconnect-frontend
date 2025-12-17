@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Heart, MessageSquare, Send, Share2, Copy, Check } from "lucide-react"
 import { commentOnPost, likeAPost, postResSchema, unlikeAPost } from "@/api/postClient"
 import type { z } from "zod"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -17,9 +17,13 @@ interface Props {
 
 const PostCard = ({ post }: Props) => {
     const navigate = useNavigate()
+    const location = useLocation()
     
     // Debug: log the post data
     console.log("PostCard received:", post)
+    
+    // Check if already on this post's page
+    const isOnPostPage = location.pathname === `/posts/${post.id}`
 
     const [comment, setComment] = useState<Boolean>(false);
     const [liked, setLiked] = useState<Boolean>(false);
@@ -45,7 +49,8 @@ const PostCard = ({ post }: Props) => {
     const hasContent = post.title || post.content
     const displayUsername = post.ownerUsername || "Anonymous"
 
-    const onClickUsername = () => {
+    const onClickUsername = (e: React.MouseEvent) => {
+        e.stopPropagation();
         console.log(`Username @${displayUsername} clicked - navigating to profile`)
         navigate(`/profiles/${displayUsername}`)
     }
@@ -100,7 +105,10 @@ const PostCard = ({ post }: Props) => {
 
     return (
         <div className="bg-gray-800/50 border border-gray-700 hover:border-gray-600 rounded-lg p-6 transition-all duration-200 hover:shadow-lg">
-            <div className="flex items-start gap-4 mb-4">
+            <div 
+                className={`flex items-start gap-4 mb-4 ${!isOnPostPage ? 'cursor-pointer' : ''}`}
+                onClick={() => !isOnPostPage && navigate(`/posts/${post.id}`)}
+            >
                 <Avatar className="ring-2 ring-gray-700 hover:ring-teal-500 transition-all">
                     <AvatarImage 
                         src={post.ownerProfilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUsername}`} 
