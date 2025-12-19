@@ -1,4 +1,5 @@
 import { axiosInstance } from "@/api/apiClient";
+import { UserResponse } from "@/entities/User";
 import useInitStore from "@/store/initStore";
 
 // Get token for debugging
@@ -74,3 +75,21 @@ export const unfollow = async (usernameToUnfollow: string) => {
     
 }
 
+
+export const getFollowers = async (username: string) => {
+    const response = await axiosInstance.get(`/users/followers/${username}`);
+    const followers = response.data.map((follower: any) => {
+        const res = UserResponse.safeParse(follower);
+        return res.success ? res.data : null;
+    }).filter((follower: any) => follower !== null);
+    return followers;
+}
+
+export const getFollowings = async (username: string) => {
+   const response = await axiosInstance.get(`/users/following/${username}`);
+    const followings = response.data.map((following: any) => {
+        const res = UserResponse.safeParse(following);
+        return res.success ? res.data : null;
+    }).filter((following: any) => following !== null);
+    return followings;
+}

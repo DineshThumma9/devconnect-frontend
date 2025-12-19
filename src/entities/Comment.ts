@@ -6,8 +6,8 @@ export const Comment = z.object({
     id: z.string(),
     comment:z.string(),
     username:z.string(),
-    createdAt: z.union([z.string().datetime(), z.date()]),
-    userProfilePicUrl: z.string().optional(),
+    createdAt: z.string(),
+    userProfilePicUrl: z.string().nullable().optional()
 
 });   
 

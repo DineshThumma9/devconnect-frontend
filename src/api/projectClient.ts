@@ -13,7 +13,11 @@ export const createProject = async (project: z.infer<typeof ProjectRequest>) => 
         throw new Error("Invalid project data: " + JSON.stringify(parsed.error.format()));
     }
 
-    const response = await projectInstance.post("/create", parsed.data);
+    const response = await projectInstance.post("/create", parsed.data,{
+        headers:{
+            'Content-Type': 'multipart/form-data'
+        }
+    });
     return response.data;
 };
 

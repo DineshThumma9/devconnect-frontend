@@ -8,8 +8,8 @@ export default function ProjectDetailsPage() {
     const {projectData, teamMembers, activities} = useConstants()
 
     return (
-        <div className="min-h-screen w-full bg-gray-950 text-white">
-            <div className="flex h-[calc(100vh-73px)]">
+        <div className="space-y-6 -mx-4 sm:-mx-6 lg:-mx-8">
+            <div className="flex h-[calc(100vh-8rem)]">
                 {/* Sidebar */}
                 <div className="w-72 bg-gray-900 h-full p-6 flex-shrink-0 overflow-y-auto">
                     {/* Project Info */}

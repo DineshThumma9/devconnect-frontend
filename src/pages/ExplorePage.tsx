@@ -28,12 +28,29 @@ const ExplorePage = () => {
 
 
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold mb-4">Explore Page</h1>
-            <p className="text-gray-400">This is where users can explore content.</p>
-            {trendingPosts.map((post) => (
-                <PostCard  key={post.id} post={post} />
-            ))}
+        <div className="space-y-6">
+            {/* Page Header */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                    <span className="text-teal-500">🔥</span>
+                    Trending Posts
+                </h1>
+                <p className="text-gray-400 text-lg">Discover what's popular in the developer community</p>
+            </div>
+
+            {/* Posts Grid */}
+            <div className="space-y-6">
+                {trendingPosts.length === 0 ? (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-12 text-center">
+                        <p className="text-gray-300 text-lg mb-2">No trending posts yet</p>
+                        <p className="text-gray-500 text-sm">Check back later for trending content</p>
+                    </div>
+                ) : (
+                    trendingPosts.map((post) => (
+                        <PostCard key={post.id} post={post} />
+                    ))
+                )}
+            </div>
         </div>
     )
 

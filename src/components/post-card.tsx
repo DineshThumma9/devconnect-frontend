@@ -26,7 +26,7 @@ const PostCard = ({ post }: Props) => {
     const isOnPostPage = location.pathname === `/posts/${post.id}`
 
     const [comment, setComment] = useState<Boolean>(false);
-    const [liked, setLiked] = useState<Boolean>(false);
+    const [liked, setLiked] = useState<boolean>(post.likedByCurrentUser);
     const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
     const [copied, setCopied] = useState<boolean>(false);
     const [commentText, setCommentText] = useState<string>("");
@@ -104,17 +104,17 @@ const PostCard = ({ post }: Props) => {
     })
 
     return (
-        <div className="bg-gray-800/50 border border-gray-700 hover:border-gray-600 rounded-lg p-6 transition-all duration-200 hover:shadow-lg">
+        <div className="bg-gray-800/50 border border-gray-700 hover:border-teal-500/50 rounded-lg p-6 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/10 hover-lift animate-fadeIn">
             <div 
-                className={`flex items-start gap-4 mb-4 ${!isOnPostPage ? 'cursor-pointer' : ''}`}
+                className={`flex items-start gap-4 mb-4 ${!isOnPostPage ? 'cursor-pointer group' : ''}`}
                 onClick={() => !isOnPostPage && navigate(`/posts/${post.id}`)}
             >
-                <Avatar className="ring-2 ring-gray-700 hover:ring-teal-500 transition-all">
+                <Avatar className="ring-2 ring-gray-700 hover:ring-teal-500 transition-all duration-300 hover:scale-110">
                     <AvatarImage 
                         src={post.ownerProfilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUsername}`} 
                         alt={displayUsername} 
                     />
-                    <AvatarFallback className="bg-teal-600 text-white font-semibold text-sm">
+                    <AvatarFallback className="bg-gradient-to-br from-teal-600 to-teal-700 text-white font-semibold text-sm">
                         {displayUsername.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
@@ -132,7 +132,7 @@ const PostCard = ({ post }: Props) => {
                     
                     {/* Title */}
                     {post.title && (
-                        <h3 className="text-lg font-bold text-white mb-2 leading-tight">{post.title}</h3>
+                        <h3 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-teal-400 transition-colors duration-300">{post.title}</h3>
                     )}
                     
                     {/* Content - Always show if exists */}
@@ -178,40 +178,54 @@ const PostCard = ({ post }: Props) => {
 
             {/* Interaction Buttons */}
             <div className="flex items-center gap-6 pt-4 border-t border-gray-700">
-                <button className={`flex items-center gap-2 text-gray-400 ${liked ? "text-red-400" : "text-gray-400"} transition-colors group`} onClick={() => {
-                     likedToggler(!liked);
-                     console.log(`Like button clicked for post ID: ${post.id}`)
-                }}>
-                    <Heart className={`w-5 h-5 ${liked ? "fill-red-400" : "fill-gray-400"}`} />
+                <button 
+                    className={`flex items-center gap-2 transition-all duration-200 hover:scale-110 group/like ${liked ? "text-red-500" : "text-gray-400 hover:text-red-400"}`} 
+                    onClick={() => {
+                        likedToggler(!liked);
+                        console.log(`Like button clicked for post ID: ${post.id}`)
+                    }}
+                >
+                    <Heart className={`w-5 h-5 transition-all ${liked ? "fill-red-500 animate-pulse" : "group-hover/like:fill-red-400"}`} />
                     <span className="text-sm font-medium">{post.likes}</span>
                 </button>
-                <button className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors group" onClick={() => {
-                    console.log(`Comment button clicked for post ID: ${post.id}`)
-                    setComment(true);
-                    // navigate(`/posts/${post.id}`)
-                }}>
-                    <MessageSquare className="w-5 h-5 group-hover:fill-blue-400" />
+                <button 
+                    className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-all duration-200 hover:scale-110 group/comment" 
+                    onClick={() => {
+                        console.log(`Comment button clicked for post ID: ${post.id}`)
+                        setComment(true);
+                    }}
+                >
+                    <MessageSquare className="w-5 h-5 group-hover/comment:fill-blue-400 transition-all" />
                     <span className="text-sm font-medium">{post.commentsCount || post.comments.length}</span>
                 </button>
-                <button className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors group" onClick={() => {
-                    console.log(`Share button clicked for post ID: ${post.id}`)
-                    setShareDialogOpen(true)
-                }}>
-                    <Share2 className="w-5 h-5 group-hover:fill-green-400" />
+                <button 
+                    className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-all duration-200 hover:scale-110 group/share" 
+                    onClick={() => {
+                        console.log(`Share button clicked for post ID: ${post.id}`)
+                        setShareDialogOpen(true)
+                    }}
+                >
+                    <Share2 className="w-5 h-5 group-hover/share:fill-green-400 transition-all" />
                     <span className="text-sm font-medium">{post.shares}</span>
                 </button>
             </div>
 
             {comment && (
-                <div className="mt-4 relative">
+                <div className="mt-4 relative animate-fadeIn">
                     <input
                         type="text"
                         placeholder="Write a comment..."
-                        className="w-full px-4 py-2 pr-12 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-teal-500 focus:outline-none"
+                        value={commentText}
+                        className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-700/50 backdrop-blur-sm text-white border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all duration-200"
                         onChange={e => setCommentText(e.currentTarget.value)}
+                        onKeyPress={e => e.key === 'Enter' && handleCommentSubmit(e)}
                     />
-                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-500 hover:text-teal-400 transition-colors">
-                        <Send className="w-5 h-5" onClick={handleCommentSubmit} />
+                    <button 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-500 hover:text-teal-400 hover:scale-110 transition-all duration-200 disabled:opacity-50"
+                        onClick={handleCommentSubmit}
+                        disabled={!commentText.trim()}
+                    >
+                        <Send className="w-5 h-5" />
                     </button>
                 </div>
             )}

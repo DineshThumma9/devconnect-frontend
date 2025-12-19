@@ -219,7 +219,7 @@ export default function HomePage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-8">
+        <div className="space-y-8">
             {/* Error Message */}
             {error && (
                 <div className="bg-red-900/30 border border-red-500 text-red-400 px-4 py-3 rounded-lg backdrop-blur-sm">

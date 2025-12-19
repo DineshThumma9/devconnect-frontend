@@ -52,14 +52,13 @@ export default function UserProfilePage() {
     }
 
     return (
-        <div className="min-h-screen w-full bg-gray-950 text-white">
-
+        <div className="space-y-6 -mx-4 sm:-mx-6 lg:-mx-8">
             <div className="w-full">
                 {/* Profile Header */}
                 <ProfileSections isOwnProfile={isOwnProfile} profileUsername={profileUsername!} />
 
                 {/* Profile Content */}
-                <div className="max-w-6xl mx-auto px-6 py-8">
+                <div className="container mx-auto px-6 lg:px-8 py-8">
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="bg-gray-900 border-gray-700 mb-8">
                             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-800">

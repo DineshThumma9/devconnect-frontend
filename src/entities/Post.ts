@@ -18,6 +18,7 @@ export const PostResponse = z.object({
     createdAt: z.string(), // Backend sends: "2025-12-12T14:55:00.345+00:00"
     updatedAt: z.string(),
     likes: z.number(),
+    likedByCurrentUser: z.boolean().optional(),
     comments: z.array(z.any()).default([]),
     shares: z.number(),
     media: z.array(z.string()).nullable(),

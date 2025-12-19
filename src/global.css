@@ -54,6 +54,10 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   html,
   body,
   #root {
@@ -65,6 +69,184 @@
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+}
+
+/* ===== Custom Animations & Transitions ===== */
+@layer utilities {
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .transition-fast {
+    @apply transition-all duration-150 ease-in-out;
+  }
+
+  /* Fade in animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-fadeInScale {
+    animation: fadeInScale 0.3s ease-out;
+  }
+
+  .animate-slideIn {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-transform duration-300;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Glow effects */
+  .glow-teal {
+    @apply shadow-lg shadow-teal-500/20;
+  }
+
+  .glow-teal-hover:hover {
+    @apply shadow-xl shadow-teal-500/40;
+  }
+
+  /* Glass morphism */
+  .glass {
+    backdrop-filter: blur(12px);
+    background: rgba(31, 41, 55, 0.6);
+  }
+
+  .glass-card {
+    backdrop-filter: blur(16px);
+    background: rgba(31, 41, 55, 0.8);
+  }
+}
+
+/* ===== Custom Scrollbars ===== */
+@layer utilities {
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    @apply bg-gray-900 rounded-full;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full border-2 border-gray-900;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ===== Focus States ===== */
+@layer utilities {
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900;
+  }
+
+  .focus-ring-inset {
+    @apply focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500;
+  }
+}
+
+/* ===== Gradient Backgrounds ===== */
+@layer utilities {
+  .gradient-primary {
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  }
+
+  .gradient-dark {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  }
+
+  .gradient-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 

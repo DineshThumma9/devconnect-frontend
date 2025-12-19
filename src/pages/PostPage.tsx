@@ -62,9 +62,8 @@ const PostPage = () => {
 
         try {
             setSubmittingComment(true);
-            await commentOnPost(id, commentText, username);
+            await commentOnPost(id, commentText);
             setCommentText("");
-            // Refresh comments
             await fetchComments();
         } catch (error) {
             console.error("Error submitting comment:", error);
@@ -94,11 +93,11 @@ const PostPage = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <div className="space-y-6">
             {/* Back Button */}
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+                className="flex items-center gap-2 text-gray-400 hover:text-teal-400 transition-colors mb-4 group"
             >
                 <ArrowLeft className="w-5 h-5" />
                 <span>Back</span>
@@ -140,7 +139,7 @@ const PostPage = () => {
                         </p>
                     ) : (
                         comments.map((comment) => (
-                            <Comment key={comment.id} CommentProps={comment} />
+                            <Comment key={comment.id} comment={comment} />
                         ))
                     )}
                 </div>

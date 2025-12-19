@@ -23,6 +23,10 @@ const NewPost = () => {
     })
     const [newTag, setNewTag] = useState("")
 
+    // Character limits
+    const TITLE_MAX = 100
+    const CONTENT_MAX = 1000
+
 
     const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
@@ -76,10 +80,10 @@ const NewPost = () => {
 
 
     return (
-        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors">
+        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:border-teal-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/10">
             <Dialog open={isNewPostOpen} onOpenChange={setIsNewPostOpen}>
                 <DialogTrigger asChild>
-                    <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
+                    <Button className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200">
                         <Send className="w-4 h-4 mr-2"/>
                         What's on your mind?
                     </Button>
@@ -92,25 +96,37 @@ const NewPost = () => {
 
 
                         <div>
-                            <Label htmlFor="title" className="text-gray-200 font-medium">Post Title</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label htmlFor="title" className="text-gray-200 font-medium">Post Title</Label>
+                                <span className={`text-xs ${newPost.title.length > TITLE_MAX ? 'text-red-400' : 'text-gray-400'}`}>
+                                    {newPost.title.length}/{TITLE_MAX}
+                                </span>
+                            </div>
                             <Input
                                 id="title"
                                 placeholder="Title of your Post"
                                 value={newPost.title}
+                                maxLength={TITLE_MAX}
                                 onChange={(e) => setNewPost((prev) => ({...prev, title: e.target.value}))}
-                                className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500"
+                                className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                             />
                         </div>
 
 
                         <div>
-                            <Label htmlFor="content" className="text-gray-200 font-medium">What's on your mind?</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label htmlFor="content" className="text-gray-200 font-medium">What's on your mind?</Label>
+                                <span className={`text-xs ${newPost.content.length > CONTENT_MAX ? 'text-red-400' : 'text-gray-400'}`}>
+                                    {newPost.content.length}/{CONTENT_MAX}
+                                </span>
+                            </div>
                             <Textarea
                                 id="content"
                                 placeholder="Share your thoughts, projects, or ask questions..."
                                 value={newPost.content}
+                                maxLength={CONTENT_MAX}
                                 onChange={(e) => setNewPost((prev) => ({...prev, content: e.target.value}))}
-                                className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500 min-h-[100px]"
+                                className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 min-h-[120px] transition-all"
                             />
                         </div>
 
@@ -178,14 +194,19 @@ const NewPost = () => {
                                     placeholder="Add a tag..."
                                     value={newTag}
                                     onChange={(e) => setNewTag(e.target.value)}
-                                    onKeyPress={(e) => e.key === "Enter" && addTag()}
-                                    className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500"
+                                    onKeyPress={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            addTag();
+                                        }
+                                    }}
+                                    className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                                 />
                                 <Button
                                     type="button"
                                     onClick={addTag}
                                     variant="outline"
-                                    className="bg-teal-600 text-white border-teal-600 hover:bg-transparent hover:text-teal-400 hover:border-teal-500 transition-all"
+                                    className="bg-teal-600 text-white border-teal-600 hover:bg-teal-700 hover:border-teal-700 transition-all"
                                 >
                                     <Tag className="w-4 h-4"/>
                                 </Button>
@@ -197,14 +218,14 @@ const NewPost = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => setIsNewPostOpen(false)}
-                                className="bg-gray-700 text-white border-gray-600 hover:bg-transparent hover:text-gray-300 hover:border-gray-500 transition-all"
+                                className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-all"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleCreatePost}
-                                disabled={!newPost.content.trim()}
-                                className="bg-teal-600 hover:bg-teal-700 text-white disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                disabled={!newPost.content.trim() && !newPost.title.trim()}
+                                className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
                             >
                                 <Send className="w-4 h-4 mr-2"/>
                                 Post

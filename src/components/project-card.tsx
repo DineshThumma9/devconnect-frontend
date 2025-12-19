@@ -25,19 +25,20 @@ export default function ProjectCard({ project, onClick }: Props) {
 
   return (
     <Card
-      className="bg-gray-800/50 border border-gray-700 hover:border-teal-500 hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden"
+      className="bg-gray-800/50 border border-gray-700 hover:border-teal-500 hover:shadow-2xl hover:shadow-teal-500/20 transition-all duration-300 cursor-pointer group overflow-hidden hover-lift animate-fadeIn"
       onClick={onClick}
     >
       <CardContent className="p-0">
         {/* Project Media */}
         <div className="aspect-video bg-gray-900 overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60 z-10"></div>
           <img
             src={project.media?.[0] || "/placeholder.svg?height=200&width=300"}
             alt={project.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
           {project.status === "ACTIVE" && (
-            <Badge className="absolute top-3 right-3 bg-teal-600 text-white border-0 shadow-lg">
+            <Badge className="absolute top-3 right-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white border-0 shadow-lg z-20 animate-pulse-subtle">
               Active
             </Badge>
           )}
@@ -46,17 +47,17 @@ export default function ProjectCard({ project, onClick }: Props) {
         <div className="p-5">
           {/* Owner Info */}
           <div className="flex items-center gap-3 mb-3">
-            <Avatar className="w-8 h-8 ring-2 ring-gray-700">
+            <Avatar className="w-8 h-8 ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all duration-300">
               <AvatarImage 
                 src={project.ownerProfilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.ownerUsername}`} 
                 alt={project.ownerUsername} 
               />
-              <AvatarFallback className="bg-teal-600 text-white text-xs font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-teal-600 to-teal-700 text-white text-xs font-semibold">
                 {project.ownerUsername}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <span className="text-sm font-medium text-gray-300 hover:text-teal-400 transition-colors">
+              <span className="text-sm font-medium text-gray-300 hover:text-teal-400 transition-colors cursor-pointer">
                 @{project.ownerUsername}
               </span>
               <span className="text-gray-500 text-xs ml-2">•</span>
@@ -65,7 +66,7 @@ export default function ProjectCard({ project, onClick }: Props) {
           </div>
 
           {/* Title */}
-          <h3 className="font-bold text-white text-base leading-tight group-hover:text-teal-400 transition-colors line-clamp-2 mb-3">
+          <h3 className="font-bold text-white text-base leading-tight group-hover:text-teal-400 transition-colors duration-300 line-clamp-2 mb-3">
             {project.title}
           </h3>
 
@@ -76,12 +77,12 @@ export default function ProjectCard({ project, onClick }: Props) {
           {project.techRequirements && project.techRequirements.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {project.techRequirements.slice(0, 3).map((tech) => (
-                <Badge key={tech} variant="secondary" className="bg-gray-700 hover:bg-teal-600 text-gray-200 hover:text-white text-xs transition-colors">
+                <Badge key={tech} variant="secondary" className="bg-gray-700/50 backdrop-blur-sm hover:bg-teal-600 text-gray-200 hover:text-white text-xs transition-all duration-200 border border-gray-600 hover:border-teal-500">
                   {tech}
                 </Badge>
               ))}
               {project.techRequirements.length > 3 && (
-                <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
+                <Badge variant="secondary" className="bg-gray-700/50 backdrop-blur-sm text-gray-300 text-xs border border-gray-600">
                   +{project.techRequirements.length - 3}
                 </Badge>
               )}
