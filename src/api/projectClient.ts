@@ -7,13 +7,15 @@ import { ProjectResponse ,ProjectRequest} from "@/entities/Project";
 // ✅ Response DTO schema - matches ProjectResponseDTO
 
 // ✅ Create project
-export const createProject = async (project: z.infer<typeof ProjectRequest>) => {
+export const createProject = async (project: ProjectRequest) => {
     const parsed = ProjectRequest.safeParse(project);
     if (!parsed.success) {
         throw new Error("Invalid project data: " + JSON.stringify(parsed.error.format()));
     }
-
-    const response = await projectInstance.post("/create", parsed.data,{
+    const formData = new FormData();
+    formData.append('project', new Blob([JSON.stringify(parsed.data)], { type: 'application/json' }));
+    formData.append('images', new Blob([], { type: 'application/json' })); // Placeholder for media files if needed
+    const response = await projectInstance.post("/create", formData,{
         headers:{
             'Content-Type': 'multipart/form-data'
         }

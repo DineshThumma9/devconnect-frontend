@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import ProjectCard from "@/components/project-card.tsx";
 import ProfileSections from "@/components/profile-sections.tsx";
 import { getProjectsByUser } from "@/api/projectClient";
@@ -11,11 +11,17 @@ import PostCard from "@/components/post-card";
 import { ProjectResponseType } from "@/entities/Project";
 import { PostResponseType } from "@/entities/Post";
 import useInitStore from "@/store/initStore";
+import { UserResponse, UserResponseType } from "@/entities/User";
+import { Trophy } from "lucide-react";
+import { getFollowers, getFollowings } from "@/api/userClient";
+
+
 
 export default function UserProfilePage() {
     const [activeTab, setActiveTab] = useState("overview")
     const { username: urlUsername } = useParams<{ username: string }>()
     const { username: loggedInUsername } = useInitStore()
+    const navigate = useNavigate()
 
     // Determine which username to use - URL param or logged-in user
     const profileUsername = urlUsername || loggedInUsername
@@ -23,12 +29,17 @@ export default function UserProfilePage() {
 
     const [userProjects, setUserProjects] = useState<ProjectResponseType[]>([]);
     const [userPosts, setUserPosts] = useState<PostResponseType[]>([]);
+    const [followers, setFollowers] = useState<UserResponseType[]>([]);
+    const [followings, setFollowings] = useState<UserResponseType[]>([]);
+
 
     useEffect(() => {
         if (profileUsername) {
             console.log("Fetching data for user:", profileUsername);
             getUserProjects();
             getUserPosts();
+            getUserFollowers();
+            getUserFollowings();
         }
     }, [profileUsername]);
     
@@ -51,6 +62,26 @@ export default function UserProfilePage() {
         }
     }
 
+
+    const getUserFollowers = async () => {  
+         try{
+            const response = await getFollowers(profileUsername!);
+            setFollowers(response); 
+
+         }  catch(error){
+            console.error("Error fetching followers:", error);
+         }
+    }
+
+    const getUserFollowings = async () => {
+        try{
+            const response = await getFollowings(profileUsername!);
+            setFollowings(response);
+         }  catch(error){
+            console.error("Error fetching followings:", error);
+         }
+
+    }
     return (
         <div className="space-y-6 -mx-4 sm:-mx-6 lg:-mx-8">
             <div className="w-full">
@@ -67,42 +98,113 @@ export default function UserProfilePage() {
                             <TabsTrigger value="projects" className="data-[state=active]:bg-gray-800">
                                 Projects
                             </TabsTrigger>
-                            {/* <TabsTrigger value="skills" className="data-[state=active]:bg-gray-800">
-                                Skills
+                            <TabsTrigger value="skills" className="data-[state=active]:bg-gray-800">
+                              Followers
                             </TabsTrigger>
                             <TabsTrigger value="activity" className="data-[state=active]:bg-gray-800">
-                                Activity
-                            </TabsTrigger> */}
+                                Following
+                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="overview">
                             <div>
-                                <h2 className="text-2xl font-semibold mb-6">{isOwnProfile ? "Your Posts" : `${profileUsername}'s Posts`}</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {userPosts.map((post) => (
-                                        <PostCard key={post.postId} post={post} />
-                                    ))}
-                                </div>
+                                <h2 className="text-2xl font-semibold mb-6 text-white">
+                                    {isOwnProfile ? "Your Posts" : `${profileUsername}'s Posts`}
+                                </h2>
+                                {userPosts.length === 0 ? (
+                                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-8 text-center">
+                                        <p className="text-gray-400">No posts to display yet.</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {userPosts.map((post) => (
+                                            <PostCard key={post.postId} post={post} />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </TabsContent>
 
                         <TabsContent value="projects">
                             <div>
-                                <h2 className="text-2xl font-semibold mb-6">{isOwnProfile ? "Your Projects" : `${profileUsername}'s Projects`}</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {userProjects.map((project) => (
-                                        <ProjectCard key={project.id} project={project} />
-                                    ))}
-                                </div>
+                                <h2 className="text-2xl font-semibold mb-6 text-white">
+                                    {isOwnProfile ? "Your Projects" : `${profileUsername}'s Projects`}
+                                </h2>
+                                {userProjects.length === 0 ? (
+                                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-8 text-center">
+                                        <p className="text-gray-400">No projects to display yet.</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {userProjects.map((project) => (
+                                            <ProjectCard 
+                                                key={project.id} 
+                                                project={project}
+                                                onClick={() => navigate(`/projects/${project.id}`)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </TabsContent>
 
-                        {/* <TabsContent value="skills">
+                        <TabsContent value="skills">
                             <div className="bg-gray-900 rounded-lg p-6">
-                                <h3 className="text-xl font-semibold mb-4">Skills & Technologies</h3>
-                                <p className="text-gray-400">Skills and technologies would be displayed here.</p>
+                                 { followers.length === 0 ? (
+                                    <p className="text-gray-400">No followers to display.</p>
+                                    ) : (
+                                    <div>
+                                        <h3 className="text-xl font-semibold mb-4">Followers</h3>
+                                        <ul className="space-y-4">
+                                            {followers.map((follower) => (
+                                                <li key={follower.id} className="flex items-center space-x-4">
+                                                    <img
+                                                        src={follower.profilePicUrl || '/default-profile-pic.png'}
+                                                        alt={follower.username}
+                                                        className="w-12 h-12 rounded-full"
+                                                    />
+                                                    <div>
+                                                        <p className="text-white font-semibold">{follower.name || follower.username}</p>
+                                                        <p className="text-gray-400">@{follower.username}</p>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                 
                             </div>
-                        </TabsContent> */}
+                                    )
+                                }
+                                </div>
+                        </TabsContent>
+
+                         <TabsContent value="skills">
+                            <div className="bg-gray-900 rounded-lg p-6">
+                                 { followers.length === 0 ? (
+                                    <p className="text-gray-400">No followers to display.</p>
+                                    ) : (
+                                    <div>
+                                        <h3 className="text-xl font-semibold mb-4">Followers</h3>
+                                        <ul className="space-y-4">
+                                            {followings.map((following) => (
+                                                <li key={following.id} className="flex items-center space-x-4">
+                                                    <img
+                                                        src={following.profilePicUrl || '/default-profile-pic.png'}
+                                                        alt={following.username}
+                                                        className="w-12 h-12 rounded-full"
+                                                    />
+                                                    <div>
+                                                        <p className="text-white font-semibold">{following.name || following.username}</p>
+                                                        <p className="text-gray-400">@{following.username}</p>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                 
+                            </div>
+                                    )
+                                }
+                                </div>
+                        </TabsContent>
 
                         {/* <TabsContent value="activity">
                             <div className="bg-gray-900 rounded-lg p-6">

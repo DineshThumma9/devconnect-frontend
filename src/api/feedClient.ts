@@ -16,7 +16,12 @@ export const fetchForYouPosts = async (username: string) => {
     const response = await feedInstance.get(`/for-you/posts`);
     return response.data.map((post: unknown) => {
         const parsed = PostResponse.safeParse(post);
-        if (!parsed.success) throw new Error("Invalid post format");
+        if (!parsed.success) {
+            console.log("Posts:", response.data);
+            console.error("Invalid post format:", parsed.error);
+            throw new Error("Invalid post format");
+
+        }
         return parsed.data;
     });
 };
@@ -48,7 +53,11 @@ export const getTrendingPosts = async () => {
     const response = await feedInstance.get("/trending/posts");
     return response.data.map((post: unknown) => {
         const parsed = postResSchema.safeParse(post);
-        if (!parsed.success) throw new Error("Invalid post format");
+        if (!parsed.success) {
+            console.log("Posts:", response.data);
+            console.error("Invalid post format:", parsed.error);
+            throw new Error("Invalid post format");
+        }
         return parsed.data;
     }
     );

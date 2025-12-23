@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx"
 import { Badge } from "@/components/ui/badge"
-import { Heart, MessageSquare, Send, Share2, Copy, Check } from "lucide-react"
+import { Heart, MessageSquare, Send, Share2, Copy, Check, MoreHorizontalIcon, MoreVertical } from "lucide-react"
 import { commentOnPost, likeAPost, postResSchema, unlikeAPost } from "@/api/postClient"
 import type { z } from "zod"
 import { useNavigate, useLocation } from "react-router-dom"
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { postInstance } from "@/api/apiClient"
 import useInitStore from "@/store/initStore"
+import NewPost from "./new-post"
+import { title } from "process"
 
 interface Props {
     post: z.infer<typeof postResSchema>
@@ -25,13 +27,14 @@ const PostCard = ({ post }: Props) => {
     // Check if already on this post's page
     const isOnPostPage = location.pathname === `/posts/${post.id}`
 
-    const [comment, setComment] = useState<Boolean>(false);
+    const [comment, setComment] = useState<boolean>(false);
     const [liked, setLiked] = useState<boolean>(post.likedByCurrentUser);
     const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
     const [copied, setCopied] = useState<boolean>(false);
     const [commentText, setCommentText] = useState<string>("");
     const {username} = useInitStore();
-
+    const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
+    const [moreOptions , setMoreOptions] = useState<boolean>(false);
     // Format the date
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
@@ -88,11 +91,20 @@ const PostCard = ({ post }: Props) => {
         const comm = commentText;
         setCommentText("");
         setComment(false);
-        const res = await commentOnPost(post.id,comm,username)
+        const res = await commentOnPost(post.id,comm)
         
         console.log("Comment submitted:", res);
 
     }
+
+
+     const onClickMoreOptions = (e: React.MouseEvent) => {
+
+        e.stopPropagation();
+        setMoreOptions(!moreOptions);
+        console.log("More options clicked");
+
+     }
 
 
     console.log("Post display data:", {
@@ -128,6 +140,38 @@ const PostCard = ({ post }: Props) => {
                         </span>
                         <span className="text-gray-500 text-sm">•</span>
                         <span className="text-gray-400 text-sm">{formatDate(post.createdAt)}</span>
+
+                        { username === displayUsername && (
+                            <div className="ml-auto text-gray-400 hover:text-gray-200 cursor-pointer transition-colors relative">
+                                <MoreHorizontalIcon onClick={onClickMoreOptions} />
+                            </div>
+                        )}
+                      
+                        {
+                            moreOptions && username === displayUsername && (
+                                <div className="ml-auto space-y-1 bg-gray-700 border border-gray-600 rounded-md p-2 absolute mt-8 right-8 z-10">
+                                    <button 
+                                        className="block w-full text-left px-3 py-2 text-sm text-white hover:bg-gray-600 rounded transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setMoreOptions(false);
+                                            setEditDialogOpen(true);
+                                        }}
+                                    >
+                                        Edit Post
+                                    </button>
+                                    <button 
+                                        className="block w-full text-left px-3 py-2 text-sm text-white hover:bg-gray-600 rounded transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            console.log("Delete Post clicked");
+                                        }}
+                                    >
+                                        Delete Post
+                                    </button>
+                                </div>
+                            )
+                        }
                     </div>
                     
                     {/* Title */}
@@ -264,6 +308,16 @@ const PostCard = ({ post }: Props) => {
                     </div>
                 </DialogContent>
             </Dialog>
+
+
+            {editDialogOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50" onClick={() => setEditDialogOpen(false)} />
+                    <div className="relative z-50">
+                        <NewPost post={{title:post.title, content:post.content!, media:[], tags:post.tags}} />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

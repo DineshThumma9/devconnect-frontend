@@ -26,6 +26,8 @@ export const UserResponse = z.object({
 })
 
 
+export type UserResponseType = z.infer<typeof UserResponse>;
+
 
 // @Data
 // public class UserResponseDTO {

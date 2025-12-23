@@ -8,18 +8,29 @@ import {Badge} from "@/components/ui/badge.tsx";
 import React, {useState} from "react";
 import {createPost} from "@/api/postClient.ts"
 import { set } from "zod";
+import { PostResponseType } from "@/entities/Post";
 
 
-const NewPost = () => {
+interface postProps {
+    title: string;
+    content: string;
+    media: File[];
+    tags: string[];
+}
+
+interface NewPostProps {
+    post?: postProps;
+}
+const NewPost = ({ post }: NewPostProps) => {
 
     const [isNewPostOpen, setIsNewPostOpen] = useState(false)
 
 
-    const [newPost, setNewPost] = useState({
+    const [newPost, setNewPost] = useState<postProps>(post || {
         title: "",
         content: "",
-        media: [] as File[],
-        tags: [] as string[],
+        media: [],
+        tags: [],
     })
     const [newTag, setNewTag] = useState("")
 
