@@ -15,7 +15,7 @@ import {
 } from "@/api/feedClient"
 import { postResSchema } from "@/api/postClient"
 import type { z } from "zod"
-
+import {client} from "@/hooks/useClient.ts"
 type Post = z.infer<typeof postResSchema>
 type Project = z.infer<typeof projectResSchema>
 type Connection = {
@@ -23,9 +23,19 @@ type Connection = {
     email: string
     profile_pic: string
 }
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx"
+import { Client, IMessage } from "@stomp/stompjs"
+import SockJS from "sockjs-client"
+import { Terminal } from "lucide-react"
+
 
 const POLLING_INTERVAL = 5 * 60 * 1000 // 5 minutes in milliseconds
 
+
+interface Notification{
+    title: string;
+    message: string;
+}
 export default function HomePage() {
     const { username ,user_email} = useInitStore()
     
@@ -36,8 +46,24 @@ export default function HomePage() {
     const [isLoadingPosts, setIsLoadingPosts] = useState(true)
     const [isLoadingProjects, setIsLoadingProjects] = useState(true)
     const [isLoadingFriends, setIsLoadingFriends] = useState(true)
+    const [notification, setNotification] = useState<Notification | null>(null)
+
     
     const [error, setError] = useState<string | null>(null)
+
+    // WebSocket connection
+    useEffect(() => {
+        if (!user_email) {
+            console.log("⚠️ No user_email, skipping WebSocket connection")
+            return
+        }
+        
+        client.activate();
+        
+        console.log("🔌 Initializing WebSocket connection...")
+        console.log("User email:", user_email)
+
+    }, [user_email])
 
     // Fetch all data
     const fetchAllData = useCallback(async () => {
@@ -218,8 +244,26 @@ export default function HomePage() {
         )
     }
 
+
+    const notifications = client.subscribe("/topic/notifications", (message: IMessage) => {
+        console.log("📬 Notification received on HomePage!")
+        console.log("Raw message:", message)
+        const body = JSON.parse(message.body)
+        setNotification({
+            title: body.title,
+            message: body.message
+        })
+        return message.body
+    })
     return (
         <div className="space-y-8">
+                <Alert variant="default | destructive">
+                        <Terminal />
+                             <AlertTitle>{notification?.title}</AlertTitle>
+                             <AlertDescription>
+                                  {notification?.message}
+                            </AlertDescription>
+                </Alert>
             {/* Error Message */}
             {error && (
                 <div className="bg-red-900/30 border border-red-500 text-red-400 px-4 py-3 rounded-lg backdrop-blur-sm">
