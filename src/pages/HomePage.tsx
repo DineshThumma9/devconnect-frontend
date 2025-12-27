@@ -15,7 +15,7 @@ import {
 } from "@/api/feedClient"
 import { postResSchema } from "@/api/postClient"
 import type { z } from "zod"
-import {client} from "@/hooks/useClient.ts"
+import { getStompClient} from "@/hooks/useClient.ts"
 type Post = z.infer<typeof postResSchema>
 type Project = z.infer<typeof projectResSchema>
 type Connection = {
@@ -51,19 +51,32 @@ export default function HomePage() {
     
     const [error, setError] = useState<string | null>(null)
 
-    // WebSocket connection
-    useEffect(() => {
-        if (!user_email) {
-            console.log("⚠️ No user_email, skipping WebSocket connection")
-            return
-        }
-        
-        client.activate();
-        
-        console.log("🔌 Initializing WebSocket connection...")
-        console.log("User email:", user_email)
+ useEffect(() => {
+  if (!user_email) return;
 
-    }, [user_email])
+  const stomp = getStompClient();
+
+  const interval = setInterval(() => {
+    if (!stomp.connected) return;
+
+    const sub = stomp.subscribe("/topic/notifications", (message) => {
+      const body = JSON.parse(message.body);
+      setNotification({
+        title: body.title,
+        message: body.message,
+      });
+    });
+
+    clearInterval(interval);
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, 100);
+
+  return () => clearInterval(interval);
+}, [user_email]);
+
 
     // Fetch all data
     const fetchAllData = useCallback(async () => {
@@ -245,16 +258,7 @@ export default function HomePage() {
     }
 
 
-    const notifications = client.subscribe("/topic/notifications", (message: IMessage) => {
-        console.log("📬 Notification received on HomePage!")
-        console.log("Raw message:", message)
-        const body = JSON.parse(message.body)
-        setNotification({
-            title: body.title,
-            message: body.message
-        })
-        return message.body
-    })
+
     return (
         <div className="space-y-8">
                 <Alert variant="default | destructive">
