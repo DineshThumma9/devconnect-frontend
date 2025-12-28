@@ -4,16 +4,24 @@ import SockJS from "sockjs-client";
 
 let client: Client | null = null;
 
+
+const token = useAuthStore.getState().accessToken;
+
 export function getStompClient() {
   if (client) return client;
 
+  console.log("🔌 Initializing STOMP client with token:", token);
+
+  if(!token){
+    console.error("No access token found for STOMP client initialization");
+    throw new Error("No access token found for STOMP client initialization");
+    
+  }
   client = new Client({
-    webSocketFactory: () => new SockJS("http://localhost:8000/wss"),
+    webSocketFactory: () => new SockJS(`http://localhost:8000/wss?access_token=${token}`),
     reconnectDelay: 5000,
 
-    connectHeaders: {
-      Authorization: `Bearer ${useAuthStore.getState().accessToken}`,
-    },
+   
 
     onConnect: () => {
       console.log("✅ STOMP connected");

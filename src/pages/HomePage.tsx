@@ -46,7 +46,10 @@ export default function HomePage() {
     const [isLoadingPosts, setIsLoadingPosts] = useState(true)
     const [isLoadingProjects, setIsLoadingProjects] = useState(true)
     const [isLoadingFriends, setIsLoadingFriends] = useState(true)
-    const [notification, setNotification] = useState<Notification | null>(null)
+    const [notification, setNotification] = useState<Notification>({
+        title: "",
+        message: ""
+    })
 
     
     const [error, setError] = useState<string | null>(null)
@@ -59,7 +62,7 @@ export default function HomePage() {
   const interval = setInterval(() => {
     if (!stomp.connected) return;
 
-    const sub = stomp.subscribe("/topic/notifications", (message) => {
+    const sub = stomp.subscribe(`/queue/user/notifications/${username}`, (message) => {
       const body = JSON.parse(message.body);
       setNotification({
         title: body.title,
@@ -259,13 +262,16 @@ export default function HomePage() {
 
 
 
+
+
+    console.log(`Notification title:${notification?.title} message: ${notification?.message}`)
     return (
         <div className="space-y-8">
                 <Alert variant="default | destructive">
                         <Terminal />
-                             <AlertTitle>{notification?.title}</AlertTitle>
+                             <AlertTitle>{notification.title}</AlertTitle>
                              <AlertDescription>
-                                  {notification?.message}
+                                  {notification.message}
                             </AlertDescription>
                 </Alert>
             {/* Error Message */}

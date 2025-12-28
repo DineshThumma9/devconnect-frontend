@@ -48,10 +48,11 @@ const ChatPage = () => {
       console.log("📡 Subscribed to private message queue");
 
       subscription = stomp.subscribe(
-        "/user/queue/messages",
+        `/queue/user/${username}`,
         (message: IMessage) => {
+          console.log("📥 Message received on /queue/user/" + username);
           const body = JSON.parse(message.body);
-
+          console.log("📨 New message received:", body);
           setMessages((prev) => [
             ...prev,
             {
@@ -84,13 +85,14 @@ const ChatPage = () => {
     try {
       const res = await axios.get(`/chat/${user1}/${user2}`);
 
+      
       setMessages(
         res.data.map((msg: MessageType) => ({
           sender: msg.senderUsername,
           content: msg.content,
           timestamp: msg.timestamp,
         }))
-      );
+      ) ;
     } catch {
       setMessages([]);
     }
@@ -100,8 +102,8 @@ const ChatPage = () => {
   };
 
 
-  const onClickChat = (user:string)=>{
-    getConversation(username!,user)
+  const onClickChat = (user: string) => {
+    if (username) getConversation(username, user);
   }
 
   /* ---------------- SEND MESSAGE ---------------- */
@@ -112,6 +114,11 @@ const ChatPage = () => {
     const stomp = getStompClient();
     if (!stomp.connected) return;
 
+
+    console.log("📡 Sending message to", reciver,"Message is",typeMsg);
+    
+    
+    
     stomp.publish({
       destination: "/app/chat.sendMessage",
       body: JSON.stringify({
@@ -131,7 +138,7 @@ const ChatPage = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
           <span className="text-teal-500">💬</span>
-          Messages
+          <span>Messages</span>
         </h1>
         <p className="text-gray-400 text-lg">Connect with your network</p>
       </div>
@@ -152,10 +159,11 @@ const ChatPage = () => {
               </div>
             ) : (
               following.map((user: any) => (
-                <div
+                <button
                   key={user.id}
+                  type="button"
                   onClick={() => onClickChat(user.username)}
-                  className="p-4 border-b border-gray-700/50 hover:bg-gray-700/30 cursor-pointer transition-all duration-200 group"
+                  className="w-full text-left p-4 border-b border-gray-700/50 hover:bg-gray-700/30 cursor-pointer transition-all duration-200 group bg-transparent"
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -170,7 +178,7 @@ const ChatPage = () => {
                       <p className="text-gray-400 text-sm truncate">Click to start chatting</p>
                     </div>
                   </div>
-                </div>
+                </button>
               ))
             )}
           </div>
@@ -189,9 +197,9 @@ const ChatPage = () => {
                 {messages.length === 0 ? (
                   <p className="text-gray-300 text-center">No messages yet. Start the conversation!</p>
                 ) : (
-                  messages.map((msg, index) => (
+                  messages.map((msg) => (
                     <div
-                      key={index}
+                      key={msg.timestamp + msg.sender + msg.content}
                       className={`mb-4 p-3 rounded-lg max-w-xs ${
                         msg.sender === username 
                           ? "bg-teal-500 text-white self-end ml-auto" 
@@ -214,7 +222,7 @@ const ChatPage = () => {
                     value={typeMsg}
                     placeholder="Type a message..."
                     onChange={(e) => setTypeMsg(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                     className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                   <button
@@ -239,7 +247,7 @@ const ChatPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default ChatPage;
