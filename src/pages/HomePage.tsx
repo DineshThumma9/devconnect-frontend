@@ -33,7 +33,6 @@ const POLLING_INTERVAL = 5 * 60 * 1000 // 5 minutes in milliseconds
 
 
 interface Notification{
-    title: string;
     message: string;
 }
 export default function HomePage() {
@@ -46,39 +45,44 @@ export default function HomePage() {
     const [isLoadingPosts, setIsLoadingPosts] = useState(true)
     const [isLoadingProjects, setIsLoadingProjects] = useState(true)
     const [isLoadingFriends, setIsLoadingFriends] = useState(true)
-    const [notification, setNotification] = useState<Notification>({
-        title: "",
-        message: ""
-    })
+    const [notification, setNotification] = useState<Notification | null>(null)
+    const [showNotification, setShowNotification] = useState(false)
 
     
     const [error, setError] = useState<string | null>(null)
 
- useEffect(() => {
-  if (!user_email) return;
+        useEffect(() => {
+                if (!user_email) return;
+                const stomp = getStompClient();
+                let sub: any;
+                const interval = setInterval(() => {
+                        if (!stomp.connected) return;
+                        sub = stomp.subscribe(`/queue/user/notifications/${username}`, (message) => {
+                                console.log("📥 Notification received on /queue/user/notifications/" + message + "body " + message.body);
+        
+            
+                                setNotification({
+                                        message: message.body,
+                                });
+                                setShowNotification(true);
+                        });
+                        clearInterval(interval);
+                }, 100);
+                return () => {
+                        clearInterval(interval);
+                        if (sub) sub.unsubscribe();
+                };
+        }, [user_email, username]);
 
-  const stomp = getStompClient();
-
-  const interval = setInterval(() => {
-    if (!stomp.connected) return;
-
-    const sub = stomp.subscribe(`/queue/user/notifications/${username}`, (message) => {
-      const body = JSON.parse(message.body);
-      setNotification({
-        title: body.title,
-        message: body.message,
-      });
-    });
-
-    clearInterval(interval);
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, 100);
-
-  return () => clearInterval(interval);
-}, [user_email]);
+        // Auto-hide notification after 5 seconds
+        useEffect(() => {
+                if (showNotification) {
+                        const timeout = setTimeout(() => {
+                                setShowNotification(false);
+                        }, 5000);
+                        return () => clearTimeout(timeout);
+                }
+        }, [showNotification]);
 
 
     // Fetch all data
@@ -264,16 +268,25 @@ export default function HomePage() {
 
 
 
-    console.log(`Notification title:${notification?.title} message: ${notification?.message}`)
     return (
         <div className="space-y-8">
-                <Alert variant="default | destructive">
-                        <Terminal />
-                             <AlertTitle>{notification.title}</AlertTitle>
-                             <AlertDescription>
-                                  {notification.message}
-                            </AlertDescription>
+            {/* Notification Alert */}
+            {notification && showNotification && (
+                <Alert variant="default" className="flex items-start gap-4 relative">
+                    <Terminal />
+                    <div className="flex-1">
+                        <AlertTitle>New Notification</AlertTitle>
+                        <AlertDescription>{notification.message}</AlertDescription>
+                    </div>
+                    <button
+                        onClick={() => setShowNotification(false)}
+                        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                        aria-label="Dismiss notification"
+                    >
+                        ×
+                    </button>
                 </Alert>
+            )}
             {/* Error Message */}
             {error && (
                 <div className="bg-red-900/30 border border-red-500 text-red-400 px-4 py-3 rounded-lg backdrop-blur-sm">

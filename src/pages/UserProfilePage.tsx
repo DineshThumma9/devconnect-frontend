@@ -159,7 +159,7 @@ export default function UserProfilePage() {
                                             {followers.map((follower) => (
                                                 <li key={follower.id} className="flex items-center space-x-4">
                                                     <img
-                                                        src={follower.profilePicUrl || '/default-profile-pic.png'}
+                                                        src={follower.profilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${follower.username}`} 
                                                         alt={follower.username}
                                                         className="w-12 h-12 rounded-full"
                                                     />
@@ -188,7 +188,7 @@ export default function UserProfilePage() {
                                             {followings.map((following) => (
                                                 <li key={following.id} className="flex items-center space-x-4">
                                                     <img
-                                                        src={following.profilePicUrl || '/default-profile-pic.png'}
+                        src={following.profilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${following.username}`} 
                                                         alt={following.username}
                                                         className="w-12 h-12 rounded-full"
                                                     />

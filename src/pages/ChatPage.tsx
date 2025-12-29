@@ -6,6 +6,7 @@ import { getStompClient } from "@/hooks/useClient";
 import { Send } from "lucide-react";
 import axios from "axios";
 import { MessageType } from "@/entities/Message";
+import { axiosInstance } from "@/api/apiClient";
 
 interface Message {
   sender: string;
@@ -83,9 +84,9 @@ const ChatPage = () => {
 
   const getConversation = async (user1: string, user2: string) => {
     try {
-      const res = await axios.get(`/chat/${user1}/${user2}`);
+      const res = await axiosInstance.get(`/chat/${user1}/${user2}`);
 
-      
+      console.log("📨 Loaded conversation between", user1, "and", user2, "Messages:", res.data);
       setMessages(
         res.data.map((msg: MessageType) => ({
           sender: msg.senderUsername,
@@ -167,7 +168,7 @@ const ChatPage = () => {
                 >
                   <div className="flex items-center gap-3">
                     <img
-                      src={user.profilePicUrl}
+                      src={user.profilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
                       alt={user.username}
                       className="w-12 h-12 rounded-full ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all"
                     />
