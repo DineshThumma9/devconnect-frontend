@@ -1,23 +1,33 @@
+import { follow } from "@/api/userClient"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx"
 import { Button } from "@/components/ui/button.tsx"
+import { UserResponseType } from "@/entities/User"
+import { useState } from "react"
 
-interface Connection {
-    username: string
-    email: string
-    profile_pic: string
-}
 
 interface Props {
-    connection: Connection
+    connection: UserResponseType
 }
 
 const SuggestedConnections = ({ connection }: Props) => {
+
+
+    const [clickedFollow,onClickedFollow] = useState<boolean>(false);
+
+
+    const onFollow  = async (username:string) => {
+        onClickedFollow(true);
+         const res = await follow(username)
+         
+    }
+
+
     return (
         <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition-all duration-200 group border border-transparent hover:border-gray-700 animate-fadeIn">
             <div className="flex items-center gap-3 flex-1 min-w-0">
                 <Avatar className="ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all duration-300 group-hover:scale-110">
                     <AvatarImage 
-                        src={connection.profile_pic || `https://api.dicebear.com/7.x/avataaars/svg?seed=${connection.username}`} 
+                        src={connection.profilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${connection.username}`} 
                         alt={connection.username} 
                     />
                     <AvatarFallback className="bg-gradient-to-br from-teal-600 to-teal-700 text-white font-semibold">
@@ -33,8 +43,9 @@ const SuggestedConnections = ({ connection }: Props) => {
                 variant="outline" 
                 size="sm" 
                 className="border-teal-600 text-teal-400 hover:bg-teal-600 hover:text-white hover:border-teal-500 transition-all duration-200 flex-shrink-0 hover:scale-105 shadow-sm hover:shadow-md"
+                onClick={() => onFollow(connection.username)}
             >
-                Connect
+                {clickedFollow ? "Connected" : "Connect"}
             </Button>
         </div>
     )

@@ -1,161 +1,47 @@
-import {z} from "zod";
-
-import axios from "axios";
-import {UserResponse} from "@/entities/User.ts";
-
-
-const APIClient = axios.create({
-    baseURL: "http://localhost:8000/auth"
-
-})
-
-
-
-
-APIClient.interceptors.response.use((request) => request,
-    (error) => {
-        if (error.response) {
-            console.error(`Error with API Response ${error.response.status}`, error.response.message)
-        }
-        if (error.request) {
-            console.error(`Error in Sending request itself ${error.request}`, error.message)
-        } else {
-            console.error(`Some error has occured ${error.message}`)
-        }
-    })
+import { z } from "zod";
+import { authInstance } from "@/api/apiClient";
+import { UserResponse } from "@/entities/User";
 
 
 const LoginRequest = z.object({
-    accessToken:z.string(),
-    refreshToken:z.string(),
+    accessToken: z.string(),
+    refreshToken: z.string(),
     user: UserResponse
-})
-
-export const register = async (username: string, password: string, email: string, name?: string, profile_pic?: string) => {
-
-
-    const body = {
-        "username": username,
-        "name": name,
-        "email": email,
-        "password": password,
-        "profile_pic": profile_pic
-    }
-
-    console.log(body)
-
-    const res = await APIClient.post("/register", body, {
-        headers: {"Content-Type": "application/json"}
-    })
-
-    console.log("📥 Full register response:", res.data)
-    console.log("📥 Response keys:", Object.keys(res.data || {}))
-    console.log("📥 User object:", res.data.user)
-
-    const parsed = LoginRequest.safeParse(res.data)
-
-    if (!parsed.success) {
-        console.error("❌ Zod validation failed:", parsed.error.errors);
-        console.error("❌ Received data:", JSON.stringify(res.data, null, 2));
-        throw new Error("Response validation failed: " + JSON.stringify(parsed.error.errors));
-    }
-
-    console.log("✅ Register validation passed:", parsed.data)
-    return parsed.data;
-
-}
-
-export const getUser = async (email: string) => {
-    const res = APIClient.get(`/get-user/${email}`)
-
-    const response = UserResponse.parse(res)
-
-    return response
-
-}
-
-
-export const deleteUser = async (email: string) => {
-    APIClient.get(`/delete-user/${email}`);
-}
-
-
-export const updateUser = async (username?: string, password?: string, email?: string, name?: string, profile_pic?: string) => {
-
-
-    const body = {
-        "username": username,
-        "name": name,
-        "email": email,
-        "password": password,
-        "profile_pic": profile_pic
-    }
-    const res = APIClient.post("/update-user", body, {
-        headers: {"Content-Type": "application/json"}
-    })
-
-    const response = UserResponse.safeParse(res)
-
-    return response.data
-
-}
-
-
-export const ProjectRequestSchema = z.object({
-    title: z.string().min(1, "Title is required"),
-    ownerId: z.string().optional(), // it's not annotated with @NotNull
-    description: z.string().min(1, "Description is required"),
-    techRequirements: z.array(z.string()).min(1, "At least one tech requirement is required"),
-    isPrivate: z.boolean().optional().default(false),
-    githubLink: z.string().url("Invalid GitHub link").optional(),
 });
 
-export type ProjectRequest = z.infer<typeof ProjectRequestSchema>;
+export const register = async (username: string, password: string, email: string, name?: string, profile_pic?: string) => {
+    const body = { username, name, email, password, profile_pic };
+    
 
+    
+    const res = await authInstance.post("/register", body);
 
-export const createPost = () =>{
-
-}
-
-export const createProject = ()=> {
-
-}
-
-
-export const loginUser = async (
-    data:
-        {
-            email: string;
-            password: string;
-        }) => {
-
-
-    const form = {
-        "email": data.email,
-        "password": data.password
-    }   
-
-    const res = await APIClient.post("/login", form, {
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-
-    console.log("📥 Raw login response:", res.data);
-    if (res.status != 200) {
-        console.log(res.data)
-        console.log(res.data.error)
-         throw new Error("Some Error has occured")
-    }
-
+    
+    
     const parsed = LoginRequest.safeParse(res.data);
     
     if (!parsed.success) {
-        console.error("❌ Login validation failed:", parsed.error.errors);
-        console.error("❌ Received data:", JSON.stringify(res.data, null, 2));
+        console.error("❌ Validation failed:", parsed.error.errors);
         throw new Error("Response validation failed: " + JSON.stringify(parsed.error.errors));
     }
     
-    console.log("✅ Login validation passed:", parsed.data)
+    return parsed.data;
+};
+
+export const loginUser = async (data: { email: string; password: string }) => {
+    const res = await authInstance.post("/login", data);
+    
+
+    
+    if (res.status !== 200) {
+        throw new Error("Login failed");
+    }
+    
+    const parsed = LoginRequest.safeParse(res.data);
+    
+    if (!parsed.success) {
+        throw new Error("Response validation failed: " + JSON.stringify(parsed.error.errors));
+    }
+    
     return parsed.data;
 };

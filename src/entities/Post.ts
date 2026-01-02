@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-// ✅ Post Request Schema - matches backend DTO
+
 export const PostRequest = z.object({
     title: z.string(),
     body: z.string(),
@@ -8,14 +8,13 @@ export const PostRequest = z.object({
     tags: z.array(z.string()).optional(),
 })
 
-// ✅ Post Response Schema - matches backend DTO
 export const PostResponse = z.object({
     id: z.string(),
     title: z.string(),
     content: z.string().nullable(),
     ownerUsername: z.string().nullable(),
     ownerProfilePicUrl: z.string().nullable(),
-    createdAt: z.string(), // Backend sends: "2025-12-12T14:55:00.345+00:00"
+    createdAt: z.string(), 
     updatedAt: z.string(),
     likes: z.number(),
     likedByCurrentUser: z.boolean().optional(),
@@ -25,7 +24,7 @@ export const PostResponse = z.object({
     tags: z.array(z.string()).default([])
 }).transform((data) => ({
     ...data,
-    // Backwards compatibility - add computed fields
+
     postId: data.id,
     commentsCount: data.comments.length
 }))

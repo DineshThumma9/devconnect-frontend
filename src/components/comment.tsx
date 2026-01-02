@@ -3,23 +3,13 @@
 
 import { CommentType } from "@/entities/Comment";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDistanceToNow } from "date-fns";
+import { formatTimeAgo } from "@/utils/dateHelpers";
 
 interface CommentProps {
     comment: CommentType
 }
 
 const Comment = ({ comment }: CommentProps) => {
-    // Format the date
-    const formatDate = (dateString: string | Date) => {
-        try {
-            const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
-            return formatDistanceToNow(date, { addSuffix: true });
-        } catch {
-            return 'recently';
-        }
-    };
-
     // Return null if comment is undefined
     if (!comment) {
         return null;

@@ -17,40 +17,31 @@ export default function OAuthCallbackPage() {
         const profilePicUrl = searchParams.get("profilePicUrl")
         const errorParam = searchParams.get("error")
 
-        console.log("🔐 OAuth Callback - params:", { token: !!token, email, username, profilePicUrl })
-        console.log("🔐 OAuth Callback - interestsCompleted:", interestsCompleted)
-
-        // Handle OAuth error
         if (errorParam) {
             setError(`OAuth failed: ${errorParam}`)
             setTimeout(() => navigate("/login"), 3000)
             return
         }
 
-        // Handle successful OAuth
+        
         if (token && email) {
-            // Store tokens in Zustand (which persists to localStorage)
-            setAccessToken(token)
-            setRefreshToken(token) // If backend provides separate refresh token, use that
             
-            // Store user data
+            setAccessToken(token)
+            setRefreshToken(token)
+            
+            
             setUserEmail(email)
             if (username) setUsername(username)
             if (profilePicUrl) setProfilePic(profilePicUrl)
-            if (username) setName(username) // Use username as name if not provided
+            if (username) setName(username)
             
-            console.log("✅ User data stored:", { email, username, profilePicUrl })
-
-            // Check interestsCompleted from store directly to get latest value
             const currentInterestsCompleted = useInitStore.getState().interestsCompleted
             console.log("🎯 Current interestsCompleted value:", currentInterestsCompleted)
             
-            // Redirect to interests page if not completed, otherwise go to app
+            
             if (currentInterestsCompleted) {
-                console.log("✅ Interests already completed - going to /app")
                 navigate("/app")
             } else {
-                console.log("⚠️ Interests not completed - going to /interests")
                 navigate("/interests")
             }
         } else {

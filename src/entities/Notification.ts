@@ -4,11 +4,12 @@ import { z } from "zod";
 
 
 export const Notification = z.object({
-    title: z.string(),
-    userName: z.string(),
+    id: z.string().optional(),
+    title: z.string().optional(),
+    userName: z.string().nullable().optional(),
     type: z.string(),
     isRead: z.boolean().optional().default(false),
-    timestamp: z.string().optional(),
+    timestamp: z.number().optional(),
     message: z.string()
 });
 export type NotificationType = z.infer<typeof Notification>;

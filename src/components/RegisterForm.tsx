@@ -50,11 +50,6 @@ export function RegisterForm({
                 setAccessToken(res.accessToken)
                 setRefreshToken(res.refreshToken)
                 
-                // Store user data in initStore
-                console.log("👤 Full user object from registration:", res.user)
-                console.log("👤 user.name:", res.user.name)
-                console.log("👤 user.username:", res.user.username)
-                console.log("👤 user.email:", res.user.email)
                 
                 setUserEmail(res.user.email)
                 setStoreUsername(res.user.username)

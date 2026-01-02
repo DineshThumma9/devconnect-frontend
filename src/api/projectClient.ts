@@ -1,35 +1,28 @@
 import { projectInstance } from "@/api/apiClient";
-import { z } from "zod";
-import { ProjectResponse ,ProjectRequest} from "@/entities/Project";
+import { ProjectResponse, ProjectRequest } from "@/entities/Project";
 
-
-
-// ✅ Response DTO schema - matches ProjectResponseDTO
-
-// ✅ Create project
 export const createProject = async (project: ProjectRequest) => {
     const parsed = ProjectRequest.safeParse(project);
     if (!parsed.success) {
         throw new Error("Invalid project data: " + JSON.stringify(parsed.error.format()));
     }
+    
     const formData = new FormData();
     formData.append('project', new Blob([JSON.stringify(parsed.data)], { type: 'application/json' }));
-    formData.append('images', new Blob([], { type: 'application/json' })); // Placeholder for media files if needed
-    const response = await projectInstance.post("/create", formData,{
-        headers:{
-            'Content-Type': 'multipart/form-data'
-        }
+    formData.append('images', new Blob([], { type: 'application/json' }));
+    
+    const response = await projectInstance.post("/create", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
     });
+    
     return response.data;
 };
 
-// ✅ Delete project
 export const deleteProject = async (projectId: string) => {
     const response = await projectInstance.delete(`/delete/${projectId}`);
     return response.data;
 };
 
-// ✅ Get project by ID
 export const getProject = async (id: string) => {
     const response = await projectInstance.get(`/id/${id}`);
     const parsed = ProjectResponse.safeParse(response.data);
@@ -41,11 +34,7 @@ export const getProject = async (id: string) => {
     return parsed.data;
 };
 
-// ✅ Update project
-export const updateProject = async (
-    id: string,
-    updatedData: z.infer<typeof ProjectRequest>
-) => {
+export const updateProject = async (id: string, updatedData: ProjectRequest) => {
     const parsed = ProjectRequest.safeParse(updatedData);
     if (!parsed.success) {
         throw new Error("Invalid update payload: " + JSON.stringify(parsed.error.format()));
@@ -55,8 +44,17 @@ export const updateProject = async (
     return response.data;
 };
 
-
-export const getProjectsByUser = async (username: string): Promise<z.infer<typeof ProjectResponse>[]> => {
+export const getProjectsByUser = async (username: string) => {
     const response = await projectInstance.get(`/get-projects/${username}`);
     return response.data;
-}
+};
+
+export const subscribeToProject = async (projectId: string) => {
+    const response = await projectInstance.post(`/subscribe/${projectId}`);
+    return response.data;
+};
+
+export const unsubscribeFromProject = async (projectId: string) => {
+    const response = await projectInstance.delete(`/unsubscribe/${projectId}`);
+    return response.data;
+};

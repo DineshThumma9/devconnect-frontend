@@ -7,8 +7,7 @@ import {Input} from "@/components/ui/input.tsx";
 import {Badge} from "@/components/ui/badge.tsx";
 import React, {useState} from "react";
 import {createPost} from "@/api/postClient.ts"
-import { set } from "zod";
-import { PostResponseType } from "@/entities/Post";
+import { useTagManager } from "@/hooks/useTagManager";
 
 
 interface postProps {
@@ -24,7 +23,7 @@ interface NewPostProps {
 const NewPost = ({ post }: NewPostProps) => {
 
     const [isNewPostOpen, setIsNewPostOpen] = useState(false)
-
+    const { tags, tagInput, setTagInput, addTag, removeTag, clearTags } = useTagManager(post?.tags || []);
 
     const [newPost, setNewPost] = useState<postProps>(post || {
         title: "",
@@ -32,7 +31,6 @@ const NewPost = ({ post }: NewPostProps) => {
         media: [],
         tags: [],
     })
-    const [newTag, setNewTag] = useState("")
 
     // Character limits
     const TITLE_MAX = 100
@@ -57,36 +55,19 @@ const NewPost = ({ post }: NewPostProps) => {
         }))
     }
 
-    const addTag = () => {
-        if (newTag.trim() && !newPost.tags.includes(newTag.trim())) {
-            setNewPost((prev) => ({
-                ...prev,
-                tags: [...prev.tags, newTag.trim()],
-            }))
-            setNewTag("")
-        }
-    }
-
-    const removeTag = (tagToRemove: string) => {
-        setNewPost((prev) => ({
-            ...prev,
-            tags: prev.tags.filter((tag) => tag !== tagToRemove),
-        }))
-    }
-
     const handleCreatePost = () => {
         console.log("Creating post:", newPost);
 
         setIsNewPostOpen(false);
         console.log("Post Content:",newPost.content);
-        createPost(newPost.title, newPost.content, newPost.media, newPost.tags);
+        createPost(newPost.title, newPost.content, newPost.media, tags);
         setNewPost({
             title: "",
             content: "",
             media: [],
             tags: [],
         })
-        setNewTag("")
+        clearTags();
     }
 
 
@@ -191,7 +172,7 @@ const NewPost = ({ post }: NewPostProps) => {
                         <div>
                             <Label className="text-gray-200 font-medium">Tags</Label>
                             <div className="flex flex-wrap gap-2 mb-2">
-                                {newPost.tags.map((tag) => (
+                                {tags.map((tag) => (
                                     <Badge key={tag} variant="secondary" className="bg-teal-600/20 border border-teal-600 text-teal-400">
                                         {tag}
                                         <button onClick={() => removeTag(tag)} className="ml-2 text-teal-400 hover:text-red-400 transition-colors">
@@ -203,8 +184,8 @@ const NewPost = ({ post }: NewPostProps) => {
                             <div className="flex gap-2">
                                 <Input
                                     placeholder="Add a tag..."
-                                    value={newTag}
-                                    onChange={(e) => setNewTag(e.target.value)}
+                                    value={tagInput}
+                                    onChange={(e) => setTagInput(e.target.value)}
                                     onKeyPress={(e) => {
                                         if (e.key === "Enter") {
                                             e.preventDefault();

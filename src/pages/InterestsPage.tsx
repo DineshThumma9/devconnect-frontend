@@ -48,12 +48,8 @@ export default function InterestsPage() {
         try {
             console.log("Selected interests:", selectedInterests)
             console.log("Total selected:", selectedInterests.length)
-            
-            // Save interests to backend
             await saveUserInterests(selectedInterests)
-            console.log("✅ Interests saved to backend successfully")
-            
-            // Mark interests as completed so user never sees this page again
+
             setInterestsCompleted(true)
             
             navigate("/app")
@@ -74,7 +70,7 @@ export default function InterestsPage() {
     return (
         <div className="min-h-screen bg-gray-950 text-white py-12 px-4">
             <div className="max-w-5xl mx-auto">
-                {/* Header */}
+    
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
                         Tell us what you're interested in
@@ -94,7 +90,7 @@ export default function InterestsPage() {
                     </div>
                 )}
 
-                {/* Interest Categories */}
+            
                 <div className="space-y-8 mb-8">
                     {Object.entries(INTEREST_CATEGORIES).map(([category, interests]) => (
                         <Card key={category} className="bg-gray-900 border-gray-700">
@@ -127,7 +123,7 @@ export default function InterestsPage() {
                     ))}
                 </div>
 
-                {/* Action Buttons */}
+    
                 <div className="flex justify-center gap-4">
                     <Button
                         onClick={handleSkip}
@@ -149,7 +145,7 @@ export default function InterestsPage() {
                     </Button>
                 </div>
 
-                {/* Selected Interests Preview */}
+            
                 {selectedInterests.length > 0 && (
                     <div className="mt-8 p-4 bg-gray-800 rounded-lg">
                         <h3 className="text-sm font-semibold text-gray-400 mb-2">Your selections:</h3>

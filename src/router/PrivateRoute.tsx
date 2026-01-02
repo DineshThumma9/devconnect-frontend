@@ -8,7 +8,7 @@ export default function PrivateRoute() {
     
     console.log('PrivateRoute - Dev Mode:', devMode, 'Token:', !!token, 'Env:', import.meta.env.VITE_DEV_MODE);
     
-    // In dev mode, bypass authentication and allow access
+
     if (devMode) {
         console.log('✅ Dev mode enabled - bypassing auth');
         return <Outlet />;

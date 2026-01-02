@@ -45,12 +45,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
                 setAccessToken(accessToken)
                 setRefreshToken(refreshToken)
                 
-                // Store user data in initStore
-                console.log("👤 Full user object:", user)
-                console.log("👤 user.name:", user.name)
-                console.log("👤 user.username:", user.username)
-                console.log("👤 user.email:", user.email)
-                console.log("👤 user.profilePicUrl:", user.profilePicUrl)
+            
                 
                 setUserEmail(user.email)
                 setUsername(user.username)

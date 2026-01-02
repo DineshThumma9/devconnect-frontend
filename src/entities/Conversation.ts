@@ -1,21 +1,6 @@
 
-
-import { time } from 'console';
 import { z } from 'zod';
 
-// @Data
-// @Document("conversations")
-// public class Conversation {
-    
-//     @Id
-//     private String id;
-//     private String recipentUsername;
-//     private String authorUsername;
-//     private long timestamp;
-//     private String lastMessage;
-
-
-// }
 
 
 

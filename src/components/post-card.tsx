@@ -1,20 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx"
 import { Badge } from "@/components/ui/badge"
-import { Heart, MessageSquare, Send, Share2, Copy, Check, MoreHorizontalIcon, MoreVertical } from "lucide-react"
-import { commentOnPost, likeAPost, postResSchema, unlikeAPost } from "@/api/postClient"
-import type { z } from "zod"
+import { Heart, MessageSquare, Send, Share2, Copy, Check, MoreHorizontalIcon } from "lucide-react"
+import { commentOnPost, likeAPost, unlikeAPost } from "@/api/postClient"
+import { PostResponseType } from "@/entities/Post"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { postInstance } from "@/api/apiClient"
 import useInitStore from "@/store/initStore"
 import NewPost from "./new-post"
-import { title } from "process"
+import { formatRelativeTime } from "@/utils/dateHelpers"
+import { useClipboard } from "@/hooks/useClipboard"
 
 interface Props {
-    post: z.infer<typeof postResSchema>
+    post: PostResponseType
 }
 
 const PostCard = ({ post }: Props) => {
@@ -22,32 +22,21 @@ const PostCard = ({ post }: Props) => {
     const location = useLocation()
     
     // Debug: log the post data
-    console.log("PostCard received:", post)
+    //console.log("PostCard received:", post)
     
     // Check if already on this post's page
     const isOnPostPage = location.pathname === `/posts/${post.id}`
 
     const [comment, setComment] = useState<boolean>(false);
-    const [liked, setLiked] = useState<boolean>(post.likedByCurrentUser);
+    const [liked, setLiked] = useState<boolean>(post.likedByCurrentUser || false);
     const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
-    const [copied, setCopied] = useState<boolean>(false);
     const [commentText, setCommentText] = useState<string>("");
     const {username} = useInitStore();
     const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
     const [moreOptions , setMoreOptions] = useState<boolean>(false);
-    // Format the date
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString)
-        const now = new Date()
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-        if (diffInSeconds < 60) return "just now"
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
-        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`
-        return date.toLocaleDateString()
-    }
-
+    
+    const { copied, copyToClipboard } = useClipboard();
+    
     // Check if we have any displayable content
     const hasContent = post.title || post.content
     const displayUsername = post.ownerUsername || "Anonymous"
@@ -59,16 +48,6 @@ const PostCard = ({ post }: Props) => {
     }
 
     const shareUrl = `${window.location.origin}/posts/${post.id}`
-
-    const handleCopyLink = async () => {
-        try {
-            await navigator.clipboard.writeText(shareUrl)
-            setCopied(true)
-            setTimeout(() => setCopied(false), 2000)
-        } catch (err) {
-            console.error('Failed to copy:', err)
-        }
-    }
 
     
 
@@ -107,13 +86,13 @@ const PostCard = ({ post }: Props) => {
      }
 
 
-    console.log("Post display data:", {
-        hasContent,
-        title: post.title,
-        content: post.content,
-        username: displayUsername,
-        ownerProfilePicUrl: post.ownerProfilePicUrl
-    })
+    // console.log("Post display data:", {
+    //     hasContent,
+    //     title: post.title,
+    //     content: post.content,
+    //     username: displayUsername,
+    //     ownerProfilePicUrl: post.ownerProfilePicUrl
+    // })
 
     return (
         <div className="bg-gray-800/50 border border-gray-700 hover:border-teal-500/50 rounded-lg p-6 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/10 hover-lift animate-fadeIn">
@@ -139,7 +118,7 @@ const PostCard = ({ post }: Props) => {
                             @{displayUsername}
                         </span>
                         <span className="text-gray-500 text-sm">•</span>
-                        <span className="text-gray-400 text-sm">{formatDate(post.createdAt)}</span>
+                        <span className="text-gray-400 text-sm">{formatRelativeTime(post.createdAt)}</span>
 
                         { username === displayUsername && (
                             <div className="ml-auto text-gray-400 hover:text-gray-200 cursor-pointer transition-colors relative">
@@ -290,7 +269,7 @@ const PostCard = ({ post }: Props) => {
                             className="bg-gray-700 border-gray-600 text-white flex-1"
                         />
                         <Button
-                            onClick={handleCopyLink}
+                            onClick={() => copyToClipboard(shareUrl)}
                             className="bg-teal-600 hover:bg-teal-700"
                         >
                             {copied ? (

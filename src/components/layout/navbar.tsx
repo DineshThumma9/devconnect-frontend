@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useAuthStore from "@/store/authStore"
 import useInitStore from "@/store/initStore"
 import { authInstance } from "@/api/apiClient"
@@ -14,6 +14,8 @@ import { Separator } from "@/components/ui/separator"
 
 export function Navbar() {
     const { accessToken, logout } = useAuthStore()
+    const [searchQuery, setSearchQuery] = useState("")
+    const [type, setType] = useState("users")
     const {
         setProfilePic,
         setName,
@@ -67,10 +69,26 @@ export function Navbar() {
 
                 {/* Center */}
                 <div className="hidden md:flex flex-1 max-w-md mx-4">
+                    <select
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                        className="bg-gray-800/50 backdrop-blur-sm border border-gray-600 text-white px-3 py-2 rounded-l-md focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-200"
+                    >
+                        <option value="users">Users</option>
+                        <option value="posts">Posts</option>       
+                        <option value="tags">Tags</option>
+                        <option value="projects">Projects</option>
+                    </select>
                     <div className="relative w-full group">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-teal-500 transition-colors" />
                         <Input
                             placeholder="Search..."
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && searchQuery.trim() !== "") {
+                                    navigate(`/search/${type}/${encodeURIComponent(searchQuery.trim())}`);
+                                }
+                            }}
                             className="pl-10 bg-gray-800/50 backdrop-blur-sm border-gray-600 text-white placeholder-gray-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-200"
                         />
                     </div>
@@ -81,7 +99,7 @@ export function Navbar() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => console.log("Notifications clicked")}
+                        onClick={() => navigate('/notifications')}
                         className="text-gray-300 hover:text-teal-400 hover:bg-gray-800 relative transition-all duration-200"
                     >
                         <Bell className="h-5 w-5" />

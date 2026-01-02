@@ -33,7 +33,7 @@ export default function ProjectCard({ project, onClick }: Props) {
         <div className="aspect-video bg-gray-900 overflow-hidden relative">
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60 z-10"></div>
           <img
-            src={project.media?.[0] || "/placeholder.svg?height=200&width=300"}
+            src={project.media && project.media.length > 0 ? project.media[0]  : "/placeholder.svg?height=200&width=300"}
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />

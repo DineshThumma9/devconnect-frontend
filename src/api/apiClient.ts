@@ -1,8 +1,6 @@
-// apiClient.ts
 import axios from "axios";
 
-// Get token from Zustand persisted store
-const getAuthToken = (): string | null => {
+export const getAuthToken = (): string | null => {
     const authStore = localStorage.getItem("auth-store");
     if (authStore) {
         try {
@@ -15,9 +13,7 @@ const getAuthToken = (): string | null => {
     return null;
 };
 
-// Attach interceptors
 const attachInterceptors = (instance: ReturnType<typeof axios.create>) => {
-    // Request Interceptor
     instance.interceptors.request.use(
         (config) => {
             const token = getAuthToken();
@@ -32,7 +28,6 @@ const attachInterceptors = (instance: ReturnType<typeof axios.create>) => {
         }
     );
 
-    // Response Interceptor
     instance.interceptors.response.use(
         (response) => response,
         (error) => {
@@ -42,13 +37,14 @@ const attachInterceptors = (instance: ReturnType<typeof axios.create>) => {
     );
 };
 
-// 🔧 Axios Instances
+
 
 export const axiosInstance = axios.create({
     baseURL: "http://localhost:8000",
 });
 attachInterceptors(axiosInstance);
 
+// Specialized instances for cleaner URLs
 export const authInstance = axios.create({
     baseURL: "http://localhost:8000/auth",
 });

@@ -12,6 +12,8 @@ import InterestsPage from "@/pages/InterestsPage"
 import PublicRoute from "@/router/PublicRoute"
 import PrivateRoute from "@/router/PrivateRoute"
 import PostPage from "@/pages/PostPage"
+import NotificationPage from "./pages/NotificationPage"
+import SearchPage from "./pages/SearchPage"
 
 const router = createBrowserRouter([
   {
@@ -35,7 +37,9 @@ const router = createBrowserRouter([
           { path: "/profiles/:username", element: <UserProfilePage /> },
           { path: "/posts/:id", element: <PostPage /> },
           { path: "/explore", element: <ExplorePage /> },
-          { path: "/chat", element: <ChatPage /> }
+          { path: "/chat", element: <ChatPage /> },
+          { path: "/notifications", element: <NotificationPage /> },
+          { path: "/search/:type/:query", element: <SearchPage /> }
         ]
       }
     ]

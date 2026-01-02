@@ -4,9 +4,12 @@ import { getFollowings } from "@/api/userClient";
 import { IMessage } from "@stomp/stompjs";
 import { getStompClient } from "@/hooks/useClient";
 import { Send } from "lucide-react";
-import axios from "axios";
 import { MessageType } from "@/entities/Message";
 import { axiosInstance } from "@/api/apiClient";
+import PageHeader from "@/components/PageHeader";
+import { UserResponseType } from "@/entities/User";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Message {
   sender: string;
@@ -17,7 +20,7 @@ interface Message {
 const ChatPage = () => {
   const { username } = useInitStore();
 
-  const [following, setFollowing] = useState<any[]>([]);
+  const [following, setFollowing] = useState<UserResponseType[]>([]);
   const [onChat, setOnChat] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [typeMsg, setTypeMsg] = useState("");
@@ -25,7 +28,7 @@ const ChatPage = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  /* ---------------- FOLLOWING LIST ---------------- */
+
 
   useEffect(() => {
     if (!username) return;
@@ -35,7 +38,7 @@ const ChatPage = () => {
       .catch(console.error);
   }, [username]);
 
-  /* ---------------- STOMP SUBSCRIPTION ---------------- */
+
 
   useEffect(() => {
     if (!username) return;
@@ -74,26 +77,23 @@ const ChatPage = () => {
     };
   }, [username]);
 
-  /* ---------------- AUTOSCROLL ---------------- */
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* ---------------- LOAD CONVERSATION ---------------- */
+  
 
   const getConversation = async (user1: string, user2: string) => {
     try {
       const res = await axiosInstance.get(`/chat/${user1}/${user2}`);
-
-      console.log("📨 Loaded conversation between", user1, "and", user2, "Messages:", res.data);
       setMessages(
         res.data.map((msg: MessageType) => ({
           sender: msg.senderUsername,
           content: msg.content,
           timestamp: msg.timestamp,
         }))
-      ) ;
+      );
     } catch {
       setMessages([]);
     }
@@ -102,12 +102,9 @@ const ChatPage = () => {
     setOnChat(true);
   };
 
-
   const onClickChat = (user: string) => {
     if (username) getConversation(username, user);
   }
-
-  /* ---------------- SEND MESSAGE ---------------- */
 
   const sendMessage = () => {
     if (!typeMsg.trim() || !reciver) return;
@@ -115,11 +112,6 @@ const ChatPage = () => {
     const stomp = getStompClient();
     if (!stomp.connected) return;
 
-
-    console.log("📡 Sending message to", reciver,"Message is",typeMsg);
-    
-    
-    
     stomp.publish({
       destination: "/app/chat.sendMessage",
       body: JSON.stringify({
@@ -135,18 +127,14 @@ const ChatPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <span className="text-teal-500">💬</span>
-          <span>Messages</span>
-        </h1>
-        <p className="text-gray-400 text-lg">Connect with your network</p>
-      </div>
-
-      {/* Chat Interface */}
+      <PageHeader 
+        icon="💬"
+        title="Messages"
+        description="Connect with your network"
+      />
+  
       <div className="flex gap-6 h-[calc(100vh-16rem)]">
-        {/* User List */}
+        {/* Contacts List */}
         <div className="w-80 flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden">
           <div className="p-4 border-b border-gray-700 bg-gray-800/70">
             <h2 className="text-lg font-semibold text-white">Conversations</h2>
@@ -154,12 +142,13 @@ const ChatPage = () => {
           </div>
           <div className="overflow-y-auto h-[calc(100%-5rem)]">
             {following.length === 0 ? (
-              <div className="p-6 text-center">
-                <p className="text-gray-400">No contacts yet</p>
-                <p className="text-gray-500 text-sm mt-1">Start following people to chat</p>
-              </div>
+              <EmptyState
+                icon="💬"
+                title="No contacts yet"
+                description="Start following people to chat"
+              />
             ) : (
-              following.map((user: any) => (
+              following.map((user) => (
                 <button
                   key={user.id}
                   type="button"
@@ -167,16 +156,20 @@ const ChatPage = () => {
                   className="w-full text-left p-4 border-b border-gray-700/50 hover:bg-gray-700/30 cursor-pointer transition-all duration-200 group bg-transparent"
                 >
                   <div className="flex items-center gap-3">
-                    <img
-                      src={user.profilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
-                      alt={user.username}
-                      className="w-12 h-12 rounded-full ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-semibold truncate group-hover:text-teal-400 transition-colors">
-                        @{user.username}
-                      </h3>
-                      <p className="text-gray-400 text-sm truncate">Click to start chatting</p>
+                    <Avatar className="w-12 h-12 ring-2 ring-gray-700 group-hover:ring-teal-500 transition-all">
+                      <AvatarImage
+                        src={user.profilePicUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
+                        alt={user.username}
+                      />
+                      <AvatarFallback className="bg-gradient-to-br from-teal-600 to-teal-700 text-white text-xs font-semibold">
+                        {user.username?.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-white font-medium group-hover:text-teal-400 transition-colors">
+                        {user.username}
+                      </p>
+                      <p className="text-gray-400 text-sm">{user.name}</p>
                     </div>
                   </div>
                 </button>
@@ -191,12 +184,16 @@ const ChatPage = () => {
             <div className="flex flex-col h-full">
               <div className="p-4 border-b border-gray-700 bg-gray-800/70">
                 <h2 className="text-xl font-semibold text-white">
-                  Chat with @{reciver}
+                  Chat with {reciver}
                 </h2>
               </div>
               <div className="flex-1 overflow-y-auto bg-gray-900/30 p-4 flex flex-col">
                 {messages.length === 0 ? (
-                  <p className="text-gray-300 text-center">No messages yet. Start the conversation!</p>
+                  <EmptyState
+                    icon="💬"
+                    title="No messages yet"
+                    description="Start the conversation!"
+                  />
                 ) : (
                   messages.map((msg) => (
                     <div
@@ -228,22 +225,20 @@ const ChatPage = () => {
                   />
                   <button
                     onClick={sendMessage}
-                    disabled={!typeMsg.trim()}
-                    className="px-4 py-3 bg-teal-500 hover:bg-teal-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors flex items-center gap-2 font-medium"
                   >
-                    <Send className="w-5 h-5 text-white" />
+                    <Send className="w-5 h-5" />
+                    Send
                   </button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="text-6xl mb-4">💬</div>
-                <p className="text-gray-300 text-lg mb-2">Select a conversation</p>
-                <p className="text-gray-500 text-sm">Choose a contact to start chatting</p>
-              </div>
-            </div>
+            <EmptyState
+              icon="💬"
+              title="Select a conversation"
+              description="Choose a contact to start chatting"
+            />
           )}
         </div>
       </div>

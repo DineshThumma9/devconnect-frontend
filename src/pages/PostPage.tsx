@@ -8,12 +8,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, ArrowLeft } from "lucide-react";
-import useInitStore from "@/store/initStore";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorMessage } from "@/components/ui/error-message";
 
 const PostPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { username } = useInitStore();
     
     const [post, setPost] = useState<PostResponseType | null>(null);
     const [comments, setComments] = useState<CommentType[]>([]);
@@ -30,10 +30,12 @@ const PostPage = () => {
     }, [id]);
 
     const fetchPost = async () => {
+        if (!id) return;
+        
         try {
             setLoading(true);
             setError(null);
-            const postData = await getPost(id!);
+            const postData = await getPost(id);
             if (postData) {
                 setPost(postData);
             } else {
@@ -48,8 +50,10 @@ const PostPage = () => {
     };
 
     const fetchComments = async () => {
+        if (!id) return;
+        
         try {
-            const commentsData = await getCommentsForPost(id!);
+            const commentsData = await getCommentsForPost(id);
             setComments(commentsData);
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -74,27 +78,38 @@ const PostPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-gray-400 text-lg">Loading post...</div>
+            <div>
+                <Button onClick={() => navigate(-1)} variant="outline" className="mb-6">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back
+                </Button>
+                <LoadingState type="post" count={1} />
             </div>
         );
     }
 
     if (error || !post) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-                <div className="text-red-400 text-lg">{error || "Post not found"}</div>
-                <Button onClick={() => navigate("/app")} variant="outline">
+            <div className="space-y-6">
+                <Button onClick={() => navigate(-1)} variant="outline">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Feed
+                    Back
                 </Button>
+                <ErrorMessage 
+                    message={error || "Post not found"} 
+                    action={
+                        <Button onClick={() => navigate("/app")} variant="outline">
+                            Go to Feed
+                        </Button>
+                    }
+                />
             </div>
         );
     }
 
     return (
         <div className="space-y-6">
-            {/* Back Button */}
+        
             <button
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-2 text-gray-400 hover:text-teal-400 transition-colors mb-4 group"
@@ -103,16 +118,16 @@ const PostPage = () => {
                 <span>Back</span>
             </button>
 
-            {/* Post Card */}
+
             <PostCard key={post.id} post={post} />
 
-            {/* Comments Section */}
+        
             <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 space-y-6">
                 <h2 className="text-xl font-semibold text-white">
                     Comments ({comments.length})
                 </h2>
 
-                {/* Comment Input */}
+            
                 <form onSubmit={handleCommentSubmit} className="flex gap-3">
                     <Input
                         type="text"
@@ -131,7 +146,7 @@ const PostPage = () => {
                     </Button>
                 </form>
 
-                {/* Comments List */}
+            
                 <div className="space-y-4">
                     {comments.length === 0 ? (
                         <p className="text-gray-400 text-center py-8">
