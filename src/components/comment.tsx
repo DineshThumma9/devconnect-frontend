@@ -37,7 +37,7 @@ const Comment = ({ comment }: CommentProps) => {
                         </span>
                         <span className="text-gray-500 text-xs">•</span>
                         <time className="text-gray-400 text-xs">
-                            {formatDate(comment.createdAt)}
+                            {formatTimeAgo(comment.createdAt)}
                         </time>
                     </div>
                     <p className="text-gray-200 text-sm leading-relaxed break-words">

@@ -101,7 +101,7 @@ export default function HomePage() {
 
     return (
         <div className="space-y-8">
-            
+            {/* Notification Alert */}
             {notification && showNotification && (
                 <Alert variant="default" className="flex items-start gap-4 relative">
                     <Terminal />
@@ -128,8 +128,11 @@ export default function HomePage() {
                 <NewProject />
             </div>
 
+
+
+<div className="flex gap-8 m-0 p-0 ">
             {/* Recent Posts */}
-            <section>
+            <section className="max-w-[60%]">
                 <h2 className="text-3xl font-bold mb-6 text-white bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">For You</h2>
                 {loading ? (
                     <LoadingState type="post" count={3} />
@@ -149,7 +152,7 @@ export default function HomePage() {
             </section>
 
             {/* Recommended Projects */}
-            <section>
+            {/* <section>
                 <h2 className="text-3xl font-bold mb-6 text-white bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Recommended Projects</h2>
                 {loading ? (
                     <LoadingState type="project" count={2} />
@@ -166,10 +169,10 @@ export default function HomePage() {
                         ))}
                     </div>
                 )}
-            </section>
+            </section> */}
 
             {/* Suggested Connections */}
-            <section>
+            <section className="flex flex-col gap-4 max-w-[40%]">
                 <h2 className="text-3xl font-bold mb-6 text-white bg-gradient-to-r from-green-400 to-teal-500 bg-clip-text text-transparent">Suggested Connections</h2>
                 {loading ? (
                     <LoadingState type="list" count={3} />
@@ -189,6 +192,7 @@ export default function HomePage() {
                     </div>
                 )}
             </section>
+    </div>
         </div>
     );
 }

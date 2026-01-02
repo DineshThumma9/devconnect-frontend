@@ -45,9 +45,7 @@ export function Navbar() {
         navigate("/login")
     }
 
-    // No need to fetch user data - it's already set during login/signup
-    // The backend now returns user data in the auth response
-
+    
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-900/95 backdrop-blur-lg supports-[backdrop-filter]:bg-gray-900/80 shadow-lg shadow-black/10">
             <div className="flex h-16 items-center justify-between px-4 md:px-6">

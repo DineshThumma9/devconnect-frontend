@@ -26,33 +26,18 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
 
         try {
             const res = await loginUser({ email, password })
-            console.log("📥 FULL LOGIN RESPONSE:", JSON.stringify(res, null, 2))
-            console.log("📥 Response type:", typeof res)
-            console.log("📥 Response keys:", Object.keys(res || {}))
-            
-            console.log("🔍 Full response object:", res)
-            // loginUser now returns the data directly: { accessToken, refreshToken, user }
             if (res?.accessToken && res?.refreshToken && res?.user) {
                 const { accessToken, refreshToken, user } = res
                 
-                console.log("🔍 Extracted tokens and user:", { 
-                    hasAccessToken: !!accessToken, 
-                    hasRefreshToken: !!refreshToken, 
-                    user 
-                })
-                
-                // Store tokens
-                setAccessToken(accessToken)
-                setRefreshToken(refreshToken)
-                
             
                 
+                
+                setAccessToken(accessToken)
+                setRefreshToken(refreshToken)
                 setUserEmail(user.email)
                 setUsername(user.username)
                 setProfilePic(user.profilePicUrl || "")
-                setName(user.name || user.username) // Use name if available, otherwise username
-                
-                // Check if user has completed interests based on backend data
+                setName(user.name || user.username) 
                 const hasCompletedInterests = user.interests && user.interests.length > 0
                 setInterestsCompleted(hasCompletedInterests)
                 
@@ -65,12 +50,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
                     hasCompletedInterests
                 })
                 
-                // Wait 2 seconds to see logs before navigating
-                console.log("⏳ Waiting 2 seconds before navigation...")
+                /
                 await new Promise(resolve => setTimeout(resolve, 2000))
-                console.log("🚀 Navigating based on interests completion:", hasCompletedInterests ? "/app" : "/interests")
-                
-                // Navigate to interests if not completed, otherwise to app
                 navigate(hasCompletedInterests ? "/app" : "/interests")
             } else {
                 console.error("❌ Invalid response structure:", res)

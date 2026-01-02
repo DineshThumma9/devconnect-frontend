@@ -14,6 +14,7 @@ import PrivateRoute from "@/router/PrivateRoute"
 import PostPage from "@/pages/PostPage"
 import NotificationPage from "./pages/NotificationPage"
 import SearchPage from "./pages/SearchPage"
+import ProjectPage from "./pages/ProjectPage"
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
         children: [
           { path: "/app", element: <HomePage /> },
           { path: "/projects/:id", element: <ProjectDetailsPage /> },
+          { path: "/projects", element: <ProjectPage /> },
           { path: "/profiles/:username", element: <UserProfilePage /> },
           { path: "/posts/:id", element: <PostPage /> },
           { path: "/explore", element: <ExplorePage /> },
